@@ -46,6 +46,9 @@ def test_session_auth_api_is_available_on_every_nextjs_host(urlconf, path, view_
         ("/api/avl/update-context/1/2/", "nextjs-avl-update-context"),
         ("/api/avl/requires-attention/1/", "nextjs-avl-requires-attention"),
         ("/api/fares/list/1/", "nextjs-fares-list"),
+        ("/api/fares/changelog/1/2/", "nextjs-fares-changelog"),
+        ("/api/timetables/changelog/1/2/", "nextjs-timetables-changelog"),
+        ("/api/avl/changelog/1/2/", "nextjs-avl-changelog"),
         ("/api/fares/requires-attention/1/", "nextjs-fares-requires-attention"),
         (
             "/api/timetables/requires-attention/1/",

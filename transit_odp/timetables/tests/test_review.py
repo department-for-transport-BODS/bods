@@ -15,9 +15,11 @@ from transit_odp.data_quality.factories.report import PTIObservationFactory
 from transit_odp.data_quality.report_summary import Summary
 from transit_odp.dqs.constants import ReportStatus
 from transit_odp.dqs.factories import ReportFactory
-from transit_odp.organisation.constants import TimetableType
+from transit_odp.organisation.constants import FaresType, TimetableType
 from transit_odp.organisation.factories import (
+    DatasetFactory,
     DatasetRevisionFactory,
+    DraftDatasetFactory,
     DatasetSubscriptionFactory,
 )
 from transit_odp.organisation.models import Dataset
@@ -122,6 +124,78 @@ def test_timetable_review_status_serialises_numpy_report_counts(
     assert data_quality["advisoryCount"] == 3
     assert data_quality["hasCriticalIssues"] is True
     assert data_quality["reportId"] == revision.dqs_report.first().id
+
+
+def _review_status_url(dataset):
+    return reverse(
+        "nextjs-timetables-review-status",
+        host=PUBLISH_HOST,
+        kwargs={"pk1": dataset.organisation_id, "pk": dataset.id},
+    )
+
+
+def test_timetable_review_status_has_live_revision_flag(client_factory):
+    user = UserFactory(account_type=OrgAdminType)
+    organisation = user.organisations.first()
+    client = client_factory(host=PUBLISH_HOST)
+    client.force_login(user)
+
+    new_dataset = DraftDatasetFactory(
+        organisation=organisation, dataset_type=TimetableType
+    )
+    response = client.get(_review_status_url(new_dataset))
+    assert response.status_code == 200
+    assert response.json()["hasLiveRevision"] is False
+
+    updated_dataset = DatasetFactory(
+        organisation=organisation, dataset_type=TimetableType
+    )
+    DatasetRevisionFactory(dataset=updated_dataset, is_published=False)
+    response = client.get(_review_status_url(updated_dataset))
+    assert response.status_code == 200
+    assert response.json()["hasLiveRevision"] is True
+
+
+@pytest.mark.parametrize("live_status", ["live", "expired"])
+def test_timetable_review_status_live_revision_returns_live_status(
+    client_factory, live_status
+):
+    user = UserFactory(account_type=OrgAdminType)
+    dataset = DatasetFactory(
+        organisation=user.organisations.first(),
+        dataset_type=TimetableType,
+        live_revision__status=live_status,
+    )
+    DatasetRevisionFactory(dataset=dataset, is_published=False, status="success")
+    client = client_factory(host=PUBLISH_HOST)
+    client.force_login(user)
+
+    response = client.get(_review_status_url(dataset), {"revision": "live"})
+
+    assert response.status_code == 200
+    assert response.json()["status"] == live_status
+    assert response.json()["revisionId"] == dataset.live_revision_id
+
+
+def test_timetable_review_status_live_revision_errors(client_factory):
+    user = UserFactory(account_type=OrgAdminType)
+    organisation = user.organisations.first()
+    client = client_factory(host=PUBLISH_HOST)
+
+    draft_only = DraftDatasetFactory(
+        organisation=organisation, dataset_type=TimetableType
+    )
+    url = _review_status_url(draft_only)
+    assert client.get(url, {"revision": "live"}).status_code == 401
+
+    client.force_login(user)
+    assert client.get(url, {"revision": "live"}).status_code == 404
+
+    fares_dataset = DatasetFactory(organisation=organisation, dataset_type=FaresType)
+    assert (
+        client.get(_review_status_url(fares_dataset), {"revision": "live"}).status_code
+        == 404
+    )
 
 
 def _report_url(revision, name="nextjs-timetables-data-quality-report", **kwargs):

@@ -8,17 +8,44 @@
 
 'use client';
 
-import Link from 'next/link';
-import { usePathname, useRouter } from 'next/navigation';
+import { useSyncExternalStore } from 'react';
+import { usePathname } from 'next/navigation';
+import { wwwPath } from '@/config/client';
 
 interface PhaseBannerProps {
   hideGlobalFeedback?: boolean;
 }
 
+const GLOBAL_FEEDBACK_PATH = '/global-feedback/';
+
+// Mirrors Django's `|urlencode` filter (urllib quote with safe="/").
+function djangoUrlencode(value: string): string {
+  return encodeURIComponent(value)
+    .replace(/%2F/gi, '/')
+    .replace(/[!'()*]/g, (char) => `%${char.charCodeAt(0).toString(16).toUpperCase()}`);
+}
+
+// Mirrors banner.html: `{{ support }}?url={{ current_host }}{{ current_path }}` where
+// current_host is request.get_host() (host[:port], no scheme) and current_path is
+// request.get_full_path()|urlencode.
+function globalFeedbackHref(): string {
+  const { host, pathname, search } = window.location;
+  return `${wwwPath(GLOBAL_FEEDBACK_PATH)}?url=${host}${djangoUrlencode(`${pathname}${search}`)}`;
+}
+
+const subscribeToNothing = () => () => undefined;
+
 export function PhaseBanner({ hideGlobalFeedback = false }: PhaseBannerProps) {
+  // Re-renders on client navigation, which re-reads window.location below. The
+  // server snapshot is the bare link so hydration matches.
   const pathname = usePathname();
-  const router = useRouter();
-  const shouldHideGlobalFeedback = hideGlobalFeedback || pathname === '/feedback';
+  const href = useSyncExternalStore(
+    subscribeToNothing,
+    globalFeedbackHref,
+    () => wwwPath(GLOBAL_FEEDBACK_PATH),
+  );
+  const shouldHideGlobalFeedback =
+    hideGlobalFeedback || pathname.replace(/\/$/, '') === GLOBAL_FEEDBACK_PATH.replace(/\/$/, '');
 
   return (
     <div className="govuk-phase-banner">
@@ -29,16 +56,16 @@ export function PhaseBanner({ hideGlobalFeedback = false }: PhaseBannerProps) {
           {shouldHideGlobalFeedback ? (
             'feedback'
           ) : (
-            <Link
-              href="/feedback"
+            <a
+              href={href}
               className="govuk-link"
               onClick={(event) => {
-                event.preventDefault();
-                router.push(`/feedback?url=${encodeURIComponent(window.location.href)}`);
+                // Query string may have changed without a pathname change.
+                event.currentTarget.href = globalFeedbackHref();
               }}
             >
               feedback
-            </Link>
+            </a>
           )}{' '}
           will help us to improve it.
         </span>
@@ -46,4 +73,3 @@ export function PhaseBanner({ hideGlobalFeedback = false }: PhaseBannerProps) {
     </div>
   );
 }
-

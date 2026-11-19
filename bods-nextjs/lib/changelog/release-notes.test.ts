@@ -1,11 +1,35 @@
 import { getReleaseNotes } from './release-notes';
 
+function parseVersion(version: string): number[] {
+  return version.split('.').map(Number);
+}
+
+function compareVersions(a: string, b: string): number {
+  const left = parseVersion(a);
+  const right = parseVersion(b);
+  for (let i = 0; i < Math.max(left.length, right.length); i += 1) {
+    const difference = (left[i] ?? 0) - (right[i] ?? 0);
+    if (difference !== 0) {
+      return difference;
+    }
+  }
+  return 0;
+}
+
 describe('getReleaseNotes', () => {
   it('returns structured release notes, newest first', async () => {
     const releaseNotes = await getReleaseNotes();
 
-    expect(releaseNotes[0].version).toBe('1.60.0');
+    // The newest release is whichever has the highest version, so the test keeps
+    // passing as new releases are added to the changelog data.
+    const versions = releaseNotes.map((release) => release.version);
+    const highestVersion = [...versions].sort((a, b) => compareVersions(b, a))[0];
+    expect(releaseNotes[0].version).toBe(highestVersion);
     expect(releaseNotes.at(-1)?.version).toBe('1.14.0');
+
+    for (let i = 1; i < versions.length; i += 1) {
+      expect(compareVersions(versions[i - 1], versions[i])).toBeGreaterThan(0);
+    }
 
     const dates = releaseNotes.map((release) => release.date);
     expect(dates).toEqual([...dates].sort().reverse());

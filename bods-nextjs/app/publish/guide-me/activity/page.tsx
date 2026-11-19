@@ -1,26 +1,12 @@
 /**
- * Redirects to consumer activity stats, matching Django's RedirectDataActivityView:
- * agents -> agent dashboard (Django deep-links a "next=data-activity" param there;
- * our agent dashboard doesn't support that yet, so agents land on the dashboard itself);
- * single-org users -> their organisation's data activity page.
+ * Redirects to consumer activity stats, matching Django's RedirectDataActivityView
+ * (destination logic lives in GuideMeRedirect).
  */
 
-import { GuideMeRedirect, type DestinationFor } from '../_components/GuideMeRedirect';
-
-const destinationFor: DestinationFor = (user) => {
-  if (user.is_agent_user) {
-    return '/agent-dashboard';
-  }
-
-  if (user.organisation_id) {
-    return `/org/${user.organisation_id}/dataset/data-activity?prev=guide-me`;
-  }
-
-  return '/org';
-};
+import { GuideMeRedirect } from '../_components/GuideMeRedirect';
 
 export const metadata = { title: 'Guide me' };
 
 export default function GuideMeActivityRedirectPage() {
-  return <GuideMeRedirect destinationFor={destinationFor} />;
+  return <GuideMeRedirect target="activity" />;
 }

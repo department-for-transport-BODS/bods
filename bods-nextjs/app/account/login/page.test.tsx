@@ -3,7 +3,7 @@ import { api } from '@/lib/api-client';
 import { AuthError } from '@/lib/auth/session-auth';
 import { HostProvider } from '@/lib/bods-host-context';
 import { LOGIN_ERRORS } from '@/lib/validation/messages';
-import LoginPage from './page';
+import LoginPage, { metadata } from './page';
 
 const mockPush = jest.fn();
 const mockLogin = jest.fn();
@@ -39,15 +39,19 @@ jest.mock('@/lib/api-client', () => {
   return { ...actual, api: { get: jest.fn() } };
 });
 
-function renderPage() {
+function renderPage(hostname = 'data.xyz.com') {
   return render(
-    <HostProvider hostname="data.xyz.com">
+    <HostProvider hostname={hostname}>
       <LoginPage />
     </HostProvider>,
   );
 }
 
 describe('Login page', () => {
+  it('uses the Django page title', () => {
+    expect(metadata.title).toBe('Sign in');
+  });
+
   beforeEach(() => {
     jest.clearAllMocks();
     mockLogin.mockReset();
@@ -64,6 +68,19 @@ describe('Login page', () => {
     expect(screen.getByText('Your email address has been confirmed.')).toBeInTheDocument();
     expect(screen.getByText('You can now sign in to your account.')).toBeInTheDocument();
     expect(screen.getByLabelText(/Email/)).toHaveValue('consumer@example.com');
+  });
+
+  it.each([
+    ['www.xyz.com', ['Bus Open Data Service', 'Bus Open Data Service', 'Sign in']],
+    ['data.xyz.com', ['Bus Open Data Service', 'Find Bus Open Data', 'Sign in']],
+    ['publish.xyz.com', ['Bus Open Data Service', 'Publish Bus Open Data', 'Sign in']],
+    ['admin.xyz.com', ['Bus Open Data Service', 'BODS admin home', 'Sign in']],
+  ])('uses the Django site-name breadcrumbs on %s', async (hostname, labels) => {
+    renderPage(hostname);
+
+    const crumbs = screen.getByRole('navigation', { name: /breadcrumb/i });
+    expect(within(crumbs).getAllByRole('listitem').map((item) => item.textContent)).toEqual(labels);
+    await waitFor(() => expect(api.get).toHaveBeenCalled());
   });
 
   it('keeps the ordinary sign-in heading when nothing was confirmed', async () => {

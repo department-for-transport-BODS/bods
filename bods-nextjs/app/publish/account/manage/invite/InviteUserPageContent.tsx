@@ -95,9 +95,8 @@ function InviteUser() {
           <div className="govuk-grid-column-two-thirds">
             <h1 className="govuk-heading-xl">Invite a new user</h1>
             <p className="govuk-body-m"> Send an email invite to a new user so they can publish and update data sets </p>
-            {isAuthLoading && <p className="govuk-body">Loading...</p>}
 
-            {!isAuthLoading && canInvite && (
+            {canInvite && (
               <form onSubmit={handleSubmit} noValidate>
                 {summaryErrors.length > 0 && (
                   <ErrorSummary errors={summaryErrors} summaryId="invite-user-error-title" />

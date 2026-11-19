@@ -11,6 +11,10 @@ from django_hosts import reverse
 from waffle import flag_is_active
 
 import config.hosts
+from transit_odp.browse.views.dataset_subpages_api import (
+    DATASET_KINDS,
+    build_changelog_response,
+)
 from transit_odp.data_quality.models.report import SchemaViolation
 from transit_odp.fares.constants import ERROR_CODE_MAP
 from transit_odp.fares.forms import (
@@ -19,6 +23,7 @@ from transit_odp.fares.forms import (
     FaresFeedUploadForm,
 )
 from transit_odp.fares.tasks import task_run_fares_pipeline
+from transit_odp.fares.views.changelog import FaresChangelogView
 from transit_odp.fares.views.list import ListView as FaresListView
 from transit_odp.fares_validator.models import FaresValidation
 from transit_odp.organisation.constants import DatasetType
@@ -366,6 +371,18 @@ def get_fares_review_status_api(request, pk1, pk):
         },
         status=200,
     )
+
+
+@require_GET
+def get_fares_changelog_api(request, pk1, pk):
+    """Paginated changelog for a fares dataset (Django: ``fares:feed-changelog``)."""
+    _, _, _, error_response = _get_request_context(request, pk1)
+    if error_response is not None:
+        return error_response
+
+    view = FaresChangelogView()
+    view.setup(request, pk1=pk1, pk=pk)
+    return build_changelog_response(view, request, DATASET_KINDS["fares"])
 
 
 @require_GET

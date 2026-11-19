@@ -25,6 +25,7 @@ from transit_odp.fares.views.api import (
     deactivate_fares_dataset_api,
     delete_fares_dataset_api,
     get_fares_list_api,
+    get_fares_changelog_api,
     get_fares_review_status_api,
     publish_fares_dataset_api,
     update_fares_dataset_api,
@@ -66,6 +67,7 @@ from transit_odp.publish.views.timetable_feed_detail_api import (
 from transit_odp.timetables.views.api import (
     create_timetables_dataset_api,
     delete_timetables_dataset_api,
+    get_timetables_changelog_api,
     get_timetables_data_quality_status_api,
     get_timetables_list_api,
     get_timetables_review_status_api,
@@ -222,6 +224,16 @@ urlpatterns = [
         name="nextjs-fares-create",
     ),
     path("fares/list/<int:pk1>/", get_fares_list_api, name="nextjs-fares-list"),
+    path(
+        "fares/changelog/<int:pk1>/<int:pk>/",
+        get_fares_changelog_api,
+        name="nextjs-fares-changelog",
+    ),
+    path(
+        "timetables/changelog/<int:pk1>/<int:pk>/",
+        get_timetables_changelog_api,
+        name="nextjs-timetables-changelog",
+    ),
     path(
         "fares/requires-attention/<int:pk1>/",
         get_fares_requires_attention_api,

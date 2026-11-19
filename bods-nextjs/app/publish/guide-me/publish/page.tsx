@@ -1,20 +1,12 @@
 /**
- * Redirects to the "start publishing" flow, matching Django's RedirectPublishView:
- * agents -> select organisation; single-org users -> choose data type.
+ * Redirects to the "start publishing" flow, matching Django's RedirectPublishView
+ * (destination logic lives in GuideMeRedirect).
  */
 
-import { GuideMeRedirect, type DestinationFor } from '../_components/GuideMeRedirect';
-
-const destinationFor: DestinationFor = (user) => {
-  if (!user.is_agent_user && user.organisation_id) {
-    return `/org/${user.organisation_id}/dataset`;
-  }
-
-  return '/org';
-};
+import { GuideMeRedirect } from '../_components/GuideMeRedirect';
 
 export const metadata = { title: 'Guide me' };
 
 export default function GuideMePublishRedirectPage() {
-  return <GuideMeRedirect destinationFor={destinationFor} />;
+  return <GuideMeRedirect target="publish" />;
 }

@@ -1,5 +1,5 @@
 import { HOSTS } from '@/config/client';
-import { hostBreadcrumbs, serviceHomeName } from './host-breadcrumbs';
+import { hostBreadcrumbs, serviceHeaderName, serviceHomeName } from './host-breadcrumbs';
 
 describe('hostBreadcrumbs', () => {
   it('adds the publish home crumb on publish', () => {
@@ -31,5 +31,21 @@ describe('hostBreadcrumbs', () => {
       label: 'BODS admin home',
       href: HOSTS.admin,
     });
+  });
+});
+
+describe('serviceHeaderName', () => {
+  it.each([
+    ['www', 'Bus Open Data Service'],
+    ['data', 'Find Bus Open Data'],
+    ['publish', 'Publish Bus Open Data'],
+    ['admin', 'Bus Open Data Service (Internal)'],
+  ] as const)('matches the Django header service name on %s', (area, name) => {
+    expect(serviceHeaderName(area)).toBe(name);
+  });
+
+  it('keeps the admin crumb label different from the admin header name', () => {
+    expect(serviceHomeName('admin')).toBe('BODS admin home');
+    expect(serviceHeaderName('admin')).not.toBe(serviceHomeName('admin'));
   });
 });

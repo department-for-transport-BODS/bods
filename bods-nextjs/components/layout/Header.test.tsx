@@ -227,6 +227,19 @@ describe('Header service navigation', () => {
     setUser(null);
   });
 
+  it.each([
+    ['xyz.com', 'Bus Open Data Service'],
+    ['data.xyz.com', 'Find Bus Open Data'],
+    ['publish.xyz.com', 'Publish Bus Open Data'],
+    ['admin.xyz.com', 'Bus Open Data Service (Internal)'],
+  ])('shows the Django site name as the header service name (%s)', (hostname, name) => {
+    renderHeader(hostname);
+
+    expect(
+      screen.getByRole('link', { name: `${name} next.js` }),
+    ).toHaveClass('govuk-header__service-name');
+  });
+
   it.each(['publish.xyz.com', 'data.xyz.com'])(
     'keeps the guide me link on the current host (%s)',
     (hostname) => {
