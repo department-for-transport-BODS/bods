@@ -4,6 +4,8 @@
  * Source: transit_odp/common/templates/common/privacy.html
  */
 
+export const metadata = { title: 'Privacy' };
+
 export default function PrivacyPolicyPage() {
   return (
     <div className="govuk-width-container">

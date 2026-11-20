@@ -13,7 +13,7 @@ const API_SERVICES = [
 ] as const;
 
 export const metadata = {
-  title: 'API services - Bus Open Data Service',
+  title: 'API services',
   description: 'Explore the interactive APIs available through the Bus Open Data Service.',
 };
 

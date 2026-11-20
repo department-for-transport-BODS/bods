@@ -65,6 +65,43 @@ function ChangelogTableRow({ row, showDataQuality }: { row: ChangelogRow; showDa
   );
 }
 
+/**
+ * The changelog table, shared with the publish-host changelog pages (Django renders the same
+ * DatasetRevisionTable there).
+ */
+export function ChangelogTable({ data }: { data: DatasetChangelog }) {
+  return (
+    // Django's SCSS makes custom_govuk_table @extend .govuk-table; plain CSS needs both classes.
+    <table className="govuk-table custom_govuk_table custom_govuk_table--changelog">
+      <thead className="govuk-table__head">
+        <tr className="govuk-table__row">
+          <th scope="col" className="govuk-!-width-one-third govuk-table__header">
+            Comment
+          </th>
+          <th scope="col" className="govuk-table__header">
+            Status
+          </th>
+          <th scope="col" className="govuk-table__header">
+            Updated date
+          </th>
+          {data.showDataQuality ? (
+            <th scope="col" className="govuk-table__header">
+              Data quality
+            </th>
+          ) : null}
+        </tr>
+      </thead>
+      <tbody className="govuk-table__body">
+        {data.results.map((row) => (
+          <Fragment key={row.revisionId}>
+            <ChangelogTableRow row={row} showDataQuality={data.showDataQuality} />
+          </Fragment>
+        ))}
+      </tbody>
+    </table>
+  );
+}
+
 function Changelog({ kind }: { kind: DatasetSubpageKind }) {
   const params = useParams();
   const searchParams = useSearchParams();
@@ -89,34 +126,7 @@ function Changelog({ kind }: { kind: DatasetSubpageKind }) {
         </div>
       </div>
       <div>
-        {/* Django's SCSS makes custom_govuk_table @extend .govuk-table; plain CSS needs both classes. */}
-        <table className="govuk-table custom_govuk_table">
-          <thead className="govuk-table__head">
-            <tr className="govuk-table__row">
-              <th scope="col" className="govuk-!-width-one-third govuk-table__header">
-                Comment
-              </th>
-              <th scope="col" className="govuk-table__header">
-                Status
-              </th>
-              <th scope="col" className="govuk-table__header">
-                Updated date
-              </th>
-              {data.showDataQuality ? (
-                <th scope="col" className="govuk-table__header">
-                  Data quality
-                </th>
-              ) : null}
-            </tr>
-          </thead>
-          <tbody className="govuk-table__body">
-            {data.results.map((row) => (
-              <Fragment key={row.revisionId}>
-                <ChangelogTableRow row={row} showDataQuality={data.showDataQuality} />
-              </Fragment>
-            ))}
-          </tbody>
-        </table>
+        <ChangelogTable data={data} />
         <Pagination
           currentPage={data.page}
           totalPages={data.totalPages}

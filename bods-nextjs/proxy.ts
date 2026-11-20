@@ -37,6 +37,7 @@ const wwwOnlyRoutePrefixes = [
   '/changelog',
   '/contact',
   '/cookie',
+  '/global-feedback',
   '/privacy-policy',
   '/version',
 ];
@@ -55,6 +56,9 @@ const sharedRoutePrefixes = [
   '/account/confirm-email',
   '/account/settings',
   '/account/agent',
+  // Django's UserRedirectView (LOGIN_REDIRECT_URL). Mounted on data, publish and admin;
+  // the page itself 404s on www, as Django does.
+  '/account/~redirect',
   '/invitations/accept-invite',
 ];
 

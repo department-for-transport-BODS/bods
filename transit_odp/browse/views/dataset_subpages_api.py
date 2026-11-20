@@ -189,11 +189,12 @@ def _serialize_changelog_row(revision, dataset_type: int, kind: DatasetKind) -> 
     return row
 
 
-@require_GET
-def get_dataset_changelog_api(request, pk, kind):
-    """Data ``feed-changelog`` page data. Public, like the Django page."""
-    dataset_kind = DATASET_KINDS[kind]
-    view = _get_view(dataset_kind.changelog_view, request, pk)
+def build_changelog_response(view, request, dataset_kind: DatasetKind) -> JsonResponse:
+    """Changelog page data for a Django ``ChangeLogView`` (data or publish host).
+
+    ``view`` is an un-dispatched view instance (``setup()`` already called), so the
+    view's own ``get_queryset`` decides which dataset and revisions are visible.
+    """
     try:
         queryset = view.get_queryset()
     except Http404:
@@ -224,6 +225,14 @@ def get_dataset_changelog_api(request, pk, kind):
             ],
         }
     )
+
+
+@require_GET
+def get_dataset_changelog_api(request, pk, kind):
+    """Data ``feed-changelog`` page data. Public, like the Django page."""
+    dataset_kind = DATASET_KINDS[kind]
+    view = _get_view(dataset_kind.changelog_view, request, pk)
+    return build_changelog_response(view, request, dataset_kind)
 
 
 # --- Subscription ------------------------------------------------------------

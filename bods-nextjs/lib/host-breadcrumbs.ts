@@ -2,6 +2,14 @@ import { HOSTS } from '@/config/client';
 import type { BreadcrumbItem } from '@/components/shared/Breadcrumbs';
 import type { BodsSubdomain } from '@/config/hosts';
 
+export function serviceHeaderName(area: BodsSubdomain): string {
+  return area === 'admin' ? 'Bus Open Data Service (Internal)' : serviceHomeName(area);
+}
+
+/**
+ * Name of the host's home crumb: Django's page.html uses `site.name`, except on the
+ * admin host where it is hard-coded to "BODS admin home".
+ */
 export function serviceHomeName(area: BodsSubdomain): string {
   switch (area) {
     case 'publish':

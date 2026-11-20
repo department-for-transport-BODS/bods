@@ -52,4 +52,12 @@ describe('FaresDatasetDetailPage', () => {
     expect(screen.getByRole('link', { name: 'Contact support desk' })).toHaveAttribute('href', wwwPath('/contact'));
     expect(document.title).toBe('Data set detail');
   });
+
+  it('links the Last updated row to the change log with a trailing slash like Django', async () => {
+    render(<FaresDatasetDetailPage />);
+
+    const link = await screen.findByRole('link', { name: 'View change log' });
+    expect(link).toHaveAttribute('href', `${publishAppPath('/org/7/dataset/fares/42')}/changelog/`);
+    expect(link.closest('tr')).toHaveTextContent('Last updated');
+  });
 });

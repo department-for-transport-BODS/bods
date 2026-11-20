@@ -64,7 +64,7 @@ export function TimetableFeedDetailErrorPanel({ feed }: { feed: TimetableFeedDet
                   {feed.publishedAtDisplay} by {feed.publishedBy ?? 'System'}
                 </span>
                 <span className="right-justify">
-                  <a className="govuk-link" href={publishAppPath(`${datasetPath}/changelog`)}>
+                  <a className="govuk-link" href={publishAppPath(`${datasetPath}/changelog/`)}>
                     View change log
                   </a>
                 </span>

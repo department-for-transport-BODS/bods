@@ -39,6 +39,56 @@ describe('ProtectedRoute', () => {
     );
   });
 
+  it('renders nothing visible and does not redirect while the session is being checked', () => {
+    (useAuth as jest.Mock).mockReturnValue({ isAuthenticated: false, isLoading: true });
+
+    const { container } = render(
+      <ProtectedRoute>
+        <p>Secret</p>
+      </ProtectedRoute>,
+    );
+
+    expect(screen.queryByText(/loading/i)).not.toBeInTheDocument();
+    expect(screen.queryByText('Secret')).not.toBeInTheDocument();
+    expect(container).toBeEmptyDOMElement();
+    expect(loginUrlWithNext).not.toHaveBeenCalled();
+  });
+
+  it('shows children once the session check resolves as signed in', () => {
+    const mockedUseAuth = useAuth as jest.Mock;
+    mockedUseAuth.mockReturnValue({ isAuthenticated: false, isLoading: true });
+
+    const { rerender } = render(
+      <ProtectedRoute>
+        <p>Secret</p>
+      </ProtectedRoute>,
+    );
+    expect(screen.queryByText('Secret')).not.toBeInTheDocument();
+
+    mockedUseAuth.mockReturnValue({ isAuthenticated: true, isLoading: false });
+    rerender(
+      <ProtectedRoute>
+        <p>Secret</p>
+      </ProtectedRoute>,
+    );
+
+    expect(screen.getByText('Secret')).toBeInTheDocument();
+    expect(loginUrlWithNext).not.toHaveBeenCalled();
+  });
+
+  it('renders nothing visible for signed-out users while redirecting', async () => {
+    (useAuth as jest.Mock).mockReturnValue({ isAuthenticated: false, isLoading: false });
+
+    const { container } = render(
+      <ProtectedRoute>
+        <p>Secret</p>
+      </ProtectedRoute>,
+    );
+
+    expect(container).toBeEmptyDOMElement();
+    await waitFor(() => expect(loginUrlWithNext).toHaveBeenCalledTimes(1));
+  });
+
   it('renders children for signed-in users', () => {
     (useAuth as jest.Mock).mockReturnValue({ isAuthenticated: true, isLoading: false });
 

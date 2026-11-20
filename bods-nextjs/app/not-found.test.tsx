@@ -30,6 +30,6 @@ describe('NotFound', () => {
   });
 
   it('sets the Django page title', () => {
-    expect(metadata.title).toBe('Page not found - Bus Open Data Service');
+    expect(metadata.title).toBe('Page not found');
   });
 });

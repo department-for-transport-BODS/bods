@@ -130,10 +130,114 @@ describe('Header account menu', () => {
   });
 });
 
+describe('Header account menu toggle', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+    setUser(orgAdmin);
+  });
+
+  function getMenu() {
+    const toggle = screen.getByRole('button', { name: /My account/ });
+    const item = toggle.closest('li') as HTMLElement;
+    const content = item.querySelector('.dropdown-content') as HTMLElement;
+    return { toggle, item, content };
+  }
+
+  it('starts closed', () => {
+    renderHeader('publish.xyz.com');
+    const { toggle, item, content } = getMenu();
+
+    expect(toggle).toHaveAttribute('aria-expanded', 'false');
+    expect(item).not.toHaveClass('open');
+    expect(content).not.toHaveClass('open');
+  });
+
+  it('toggles when the My account text is clicked', async () => {
+    renderHeader('publish.xyz.com');
+    const { toggle, item, content } = getMenu();
+
+    await userEvent.click(toggle);
+    expect(toggle).toHaveAttribute('aria-expanded', 'true');
+    expect(item).toHaveClass('open');
+    expect(content).toHaveClass('open');
+
+    await userEvent.click(toggle);
+    expect(toggle).toHaveAttribute('aria-expanded', 'false');
+    expect(item).not.toHaveClass('open');
+    expect(content).not.toHaveClass('open');
+  });
+
+  it('toggles when the rest of the My account area (beside the text) is clicked', async () => {
+    renderHeader('publish.xyz.com');
+    const { item, content } = getMenu();
+
+    // A click on the <li> itself (outside the button, e.g. its padding) must toggle
+    // the menu too, as it does in Django.
+    await userEvent.click(item);
+    expect(item).toHaveClass('open');
+    expect(content).toHaveClass('open');
+
+    await userEvent.click(item);
+    expect(item).not.toHaveClass('open');
+    expect(content).not.toHaveClass('open');
+  });
+
+  it('closes when the user clicks outside the menu', async () => {
+    renderHeader('publish.xyz.com');
+    const { toggle, item, content } = getMenu();
+
+    await userEvent.click(toggle);
+    expect(item).toHaveClass('open');
+
+    await userEvent.click(document.body);
+    expect(toggle).toHaveAttribute('aria-expanded', 'false');
+    expect(item).not.toHaveClass('open');
+    expect(content).not.toHaveClass('open');
+  });
+
+  it('stays closed when the user clicks outside while it is closed', async () => {
+    renderHeader('publish.xyz.com');
+    const { item } = getMenu();
+
+    await userEvent.click(document.body);
+    expect(item).not.toHaveClass('open');
+  });
+
+  it('toggles on the data host too', async () => {
+    renderHeader('data.xyz.com');
+    const { item } = getMenu();
+
+    await userEvent.click(item);
+    expect(item).toHaveClass('open');
+  });
+
+  it('can be operated from the keyboard', async () => {
+    renderHeader('publish.xyz.com');
+    const { toggle, item } = getMenu();
+
+    toggle.focus();
+    await userEvent.keyboard('{Enter}');
+    expect(item).toHaveClass('open');
+  });
+});
+
 describe('Header service navigation', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     setUser(null);
+  });
+
+  it.each([
+    ['xyz.com', 'Bus Open Data Service'],
+    ['data.xyz.com', 'Find Bus Open Data'],
+    ['publish.xyz.com', 'Publish Bus Open Data'],
+    ['admin.xyz.com', 'Bus Open Data Service (Internal)'],
+  ])('shows the Django site name as the header service name (%s)', (hostname, name) => {
+    renderHeader(hostname);
+
+    expect(
+      screen.getByRole('link', { name: `${name} next.js` }),
+    ).toHaveClass('govuk-header__service-name');
   });
 
   it.each(['publish.xyz.com', 'data.xyz.com'])(

@@ -5,7 +5,7 @@ import { serverConfig } from '@/config/server';
 import { AVLUpdatePageContent } from '../_components/AVLUpdatePageContent';
 
 export const metadata: Metadata = {
-  title: 'Update data feed',
+  title: 'Update data feed: comment',
 };
 
 export default async function AVLUpdatePage() {

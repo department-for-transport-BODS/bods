@@ -5,12 +5,15 @@
  */
 
 import { connection } from 'next/server';
+import type { Metadata } from 'next';
 import { Breadcrumbs } from '@/components/shared/Breadcrumbs';
 import { HOSTS, dataPath, publishAppPath, wwwPath } from '@/config/client';
 import { getKnownIssues } from '@/lib/changelog/known-issues';
 import { getReleaseNotes } from '@/lib/changelog/release-notes';
 import { KnownIssuesSection } from './_components/KnownIssuesSection';
 import { ReleaseNotesSection } from './_components/ReleaseNotesSection';
+
+export const metadata: Metadata = { title: 'Bus Open Data Service' };
 
 export default async function ChangelogPage() {
   await connection();

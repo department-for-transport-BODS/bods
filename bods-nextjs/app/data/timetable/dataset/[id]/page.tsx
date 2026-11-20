@@ -79,7 +79,7 @@ export async function generateMetadata({ params }: DatasetDetailPageProps) {
   try {
     const dataset = isNumericId(id) ? await getDataset(id) : null;
     if (!dataset) {
-      return { title: 'Page not found - Bus Open Data Service' };
+      return { title: 'Page not found' };
     }
   } catch {
     // The page itself reports the failure; keep the metadata render quiet.

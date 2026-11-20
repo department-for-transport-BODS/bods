@@ -1,11 +1,16 @@
 import Link from 'next/link';
-import { TRANSXCHANGE_VERSION } from '@/config/client';
+import { connection } from 'next/server';
+import { serverConfig } from '@/config/server';
+import { NetexHelp, SiriSxHelp, SiriVmHelp, TxcHelp } from '@/components/data/bulk-download/help-modals';
 import { datasetListPath } from '@/lib/dataset-paths';
 import { DataHelpSidebar } from '@/components/data/DataHelpSidebar';
 import { Breadcrumbs } from '@/components/shared/Breadcrumbs';
 import { HOSTS, dataPath } from '@/config/client';
 
-export default function DataSearchSelectPage() {
+export default async function DataSearchSelectPage() {
+  // The PTI profile URL is a runtime (ECS) value, so never prerender it at build time.
+  await connection();
+
   return (
     <>
       <div className="govuk-width-container">
@@ -47,10 +52,10 @@ export default function DataSearchSelectPage() {
                     You can filter and browse specific timetables data on the service.
                   </p>
                   <ul className="govuk-list">
-                    <li><strong>Format:</strong> TXC {TRANSXCHANGE_VERSION} PTI 1.1.A</li>
-                    <li><strong>File type:</strong> XML file</li>
-                    <li><strong>Data type:</strong> Static</li>
-                    <li><strong>Data source:</strong> BODS</li>
+                    <li><strong>Format :</strong> TXC 2.4 PTI 1.1.A <TxcHelp ptiPdfUrl={serverConfig.ptiPdfUrl} /></li>
+                    <li><strong>File type :</strong> XML file</li>
+                    <li><strong>Data type :</strong> Static</li>
+                    <li><strong>Data source :</strong> BODS</li>
                   </ul>
                 </div>
 
@@ -63,10 +68,10 @@ export default function DataSearchSelectPage() {
                     time.
                   </p>
                   <ul className="govuk-list">
-                    <li><strong>Format:</strong> SIRI-VM</li>
-                    <li><strong>File type:</strong> XML file</li>
-                    <li><strong>Data type:</strong> Real-time</li>
-                    <li><strong>Data source:</strong> BODS</li>
+                    <li><strong>Format :</strong> SIRI-VM <SiriVmHelp /></li>
+                    <li><strong>File type :</strong> XML file</li>
+                    <li><strong>Data type :</strong> Real-time</li>
+                    <li><strong>Data source :</strong> BODS</li>
                   </ul>
                 </div>
 
@@ -78,10 +83,10 @@ export default function DataSearchSelectPage() {
                     You can filter and browse specific fares data on the service.
                   </p>
                   <ul className="govuk-list">
-                    <li><strong>Format:</strong> NeTEx</li>
-                    <li><strong>File type:</strong> XML file</li>
-                    <li><strong>Data type:</strong> Static</li>
-                    <li><strong>Data source:</strong> BODS</li>
+                    <li><strong>Format :</strong> NeTEx <NetexHelp /></li>
+                    <li><strong>File type :</strong> XML file</li>
+                    <li><strong>Data type :</strong> Static</li>
+                    <li><strong>Data source :</strong> BODS</li>
                   </ul>
                 </div>
 
@@ -93,10 +98,10 @@ export default function DataSearchSelectPage() {
                     You can browse specific disruption data.
                   </p>
                   <ul className="govuk-list">
-                    <li><strong>Format:</strong> SIRI-SX</li>
-                    <li><strong>File type:</strong> XML file</li>
-                    <li><strong>Data type:</strong> Real-time</li>
-                    <li><strong>Data source:</strong> Local authorities</li>
+                    <li><strong>Format :</strong> SIRI-SX <SiriSxHelp /></li>
+                    <li><strong>File type :</strong> XML file</li>
+                    <li><strong>Data type :</strong> Real-time</li>
+                    <li><strong>Data source :</strong> Local authorities</li>
                   </ul>
                 </div>
               </div>
@@ -114,6 +119,6 @@ export default function DataSearchSelectPage() {
  * Metadata for the page
  */
 export const metadata = {
-  title: 'Browse - Bus Open Data Service',
+  title: 'Browse',
   description: 'Browse bus open data by type, including timetables, location, fares and disruption data.',
 };

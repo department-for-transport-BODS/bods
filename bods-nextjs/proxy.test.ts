@@ -309,6 +309,16 @@ describe('subdomain routing proxy', () => {
       expect(response.headers.get('x-middleware-rewrite')).toBeNull();
     });
 
+    it.each(['data', 'publish', 'admin', 'www'])('serves account/~redirect on the %s host without rewriting', (subdomain) => {
+      for (const path of ['/account/~redirect', '/account/~redirect/']) {
+        const host = `${subdomain}.xyz.com`;
+        const response = proxy(request(`https://${host}${path}`, host));
+
+        expect(response.headers.get('location')).toBeNull();
+        expect(response.headers.get('x-middleware-rewrite')).toBeNull();
+      }
+    });
+
     it('still redirects genuinely www-only routes from the publish host to WWW', () => {
       const response = proxy(request('https://publish.xyz.com/cookie', 'publish.xyz.com'));
 

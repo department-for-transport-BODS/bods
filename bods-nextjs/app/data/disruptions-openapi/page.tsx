@@ -3,7 +3,7 @@ import { ApiDocumentationPage } from '@/components/data/api-documentation/ApiDoc
 import { API_DOCUMENTATION } from '@/components/data/api-documentation/config';
 import { featureFlags } from '@/config/feature-flags';
 
-export const metadata = { title: 'Disruptions data API - Bus Open Data Service' };
+export const metadata = { title: 'Disruptions data API' };
 
 export default async function DisruptionsApiDocumentationPage() {
   await connection();

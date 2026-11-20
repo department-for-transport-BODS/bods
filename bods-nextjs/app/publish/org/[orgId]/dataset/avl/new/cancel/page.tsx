@@ -3,7 +3,7 @@ import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { AVLCreateCancelContent } from '../../_components/AVLCreateCancelContent';
 
 export const metadata: Metadata = {
-  title: 'Publish new data feed',
+  title: 'Publish new data feed: cancel',
 };
 
 export default function AVLCreateCancelPage() {

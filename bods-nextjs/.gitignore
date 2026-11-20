@@ -39,6 +39,9 @@ yarn-error.log*
 /public/assets/images/*
 !/public/assets/images/case-study/
 !/public/assets/images/case-study/*.png
+!/public/assets/images/feedback/
+!/public/assets/images/feedback/*.png
+!/public/assets/images/calendar-icon.png
 
 # typescript
 *.tsbuildinfo

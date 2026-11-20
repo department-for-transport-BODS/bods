@@ -1,45 +1,6 @@
-/**
- * Logout Page
- * 
- * Handles user logout
- */
+import type { Metadata } from 'next';
+import LogoutPage from './LogoutPageContent';
 
-'use client';
+export const metadata: Metadata = { title: 'Sign out' };
 
-import { useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import { useAuth } from '@/hooks/useAuth';
-
-export default function LogoutPage() {
-  const { signOut, isAuthenticated, isLoading } = useAuth();
-  const router = useRouter();
-
-  useEffect(() => {
-    if (isLoading) {
-      return;
-    }
-
-    if (isAuthenticated) {
-      signOut().then(() => {
-        router.push('/account/logout-success');
-        router.refresh();
-      });
-    } else {
-      router.push('/account/logout-success');
-    }
-  }, [isAuthenticated, isLoading, signOut, router]);
-
-  return (
-    <div className="govuk-width-container">
-      <div className="govuk-main-wrapper">
-        <div className="govuk-grid-row">
-          <div className="govuk-grid-column-two-thirds">
-            <h1 className="govuk-heading-xl">Signing out...</h1>
-            <p className="govuk-body">Please wait while we sign you out.</p>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
+export default LogoutPage;

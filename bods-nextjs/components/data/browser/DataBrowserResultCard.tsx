@@ -49,7 +49,7 @@ export function DataBrowserResultCard({
       <ul className="app-data-browser__key-value-list">
         {keyValues.map((item) => (
           <li className="app-data-browser__key-value-item" key={`${item.key}-${item.value}`}>
-            <span className="app-data-browser__item-key">{item.key}</span>
+            <span className="app-data-browser__item-key">{item.key}</span>{' '}
             <span className="app-data-browser__item-value">{item.value}</span>
           </li>
         ))}

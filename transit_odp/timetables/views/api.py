@@ -11,6 +11,10 @@ from django_hosts import reverse
 from waffle import flag_is_active
 
 import config.hosts
+from transit_odp.browse.views.dataset_subpages_api import (
+    DATASET_KINDS,
+    build_changelog_response,
+)
 from transit_odp.publish.forms import (
     FeedCommentForm,
     FeedDescriptionForm,
@@ -20,6 +24,7 @@ from transit_odp.publish.views.review_list_api import (
     TIMETABLE,
     build_review_list_response,
 )
+from transit_odp.publish.views.timetable.changelog import TimetableChangeLogView
 from transit_odp.publish.views.timetable.list import ListView as TimetableListView
 from transit_odp.publish.views.utils import get_distinct_dataset_txc_attributes
 from transit_odp.data_quality.models import SchemaViolation
@@ -364,9 +369,31 @@ def update_timetables_dataset_api(request, pk1, pk):
 
 @require_GET
 def get_timetables_review_status_api(request, pk1, pk):
-    _, _, revision, error_response = _get_request_context(request, pk1, pk)
-    if error_response is not None:
-        return error_response
+    if request.GET.get("revision") == "live":
+        # Django's delete view picks its cancel URL from the live revision's status.
+        _, organisation, _, error_response = _get_request_context(request, pk1)
+        if error_response is not None:
+            return error_response
+
+        dataset = (
+            Dataset.objects.select_related("live_revision")
+            .filter(
+                id=pk,
+                organisation_id=organisation.id,
+                dataset_type=DatasetType.TIMETABLE.value,
+            )
+            .first()
+        )
+        if dataset is None:
+            return JsonResponse({"error": DATASET_NOT_FOUND_ERROR}, status=404)
+
+        revision = dataset.live_revision
+        if revision is None:
+            return JsonResponse({"error": REVISION_NOT_FOUND_ERROR}, status=404)
+    else:
+        _, _, revision, error_response = _get_request_context(request, pk1, pk)
+        if error_response is not None:
+            return error_response
 
     progress, error_code = _get_revision_progress(revision)
 
@@ -479,6 +506,9 @@ def get_timetables_review_status_api(request, pk1, pk):
     if revision.last_modified_user is not None:
         last_modified_user = revision.last_modified_user.username
 
+    # Django's feed_delete.html branches on ``object.live_revision``.
+    has_live_revision = revision.dataset.live_revision_id is not None
+
     return JsonResponse(
         {
             "datasetId": revision.dataset_id,
@@ -486,6 +516,7 @@ def get_timetables_review_status_api(request, pk1, pk):
             "status": status,
             "progress": progress,
             "loading": is_loading,
+            "hasLiveRevision": has_live_revision,
             "name": revision.name,
             "description": revision.description,
             "shortDescription": revision.short_description,
@@ -524,6 +555,18 @@ def get_timetables_review_status_api(request, pk1, pk):
         },
         status=200,
     )
+
+
+@require_GET
+def get_timetables_changelog_api(request, pk1, pk):
+    """Paginated changelog for a timetable dataset (Django: ``feed-changelog``)."""
+    _, _, _, error_response = _get_request_context(request, pk1)
+    if error_response is not None:
+        return error_response
+
+    view = TimetableChangeLogView()
+    view.setup(request, pk1=pk1, pk=pk)
+    return build_changelog_response(view, request, DATASET_KINDS["timetables"])
 
 
 @require_GET

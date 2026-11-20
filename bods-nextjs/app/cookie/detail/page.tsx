@@ -2,6 +2,8 @@
  * Cookie Detail Page
  */
 
+export const metadata = { title: 'Details about cookies' };
+
 export default function CookieDetailPage() {
   return (
     <div className="govuk-width-container">

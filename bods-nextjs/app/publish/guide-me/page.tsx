@@ -65,6 +65,8 @@ const STEPS: StepItem[] = [
   },
 ];
 
+export const metadata = { title: 'Guide me' };
+
 export default function PublishGuideMePage() {
 
   return (

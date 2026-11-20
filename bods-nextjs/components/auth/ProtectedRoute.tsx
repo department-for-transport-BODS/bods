@@ -34,17 +34,10 @@ export function ProtectedRoute({
     window.location.assign(loginUrlWithNext(redirectTo, window.location.href));
   }, [isAuthenticated, isLoading, redirectTo]);
 
-  if (isLoading) {
-    return (
-      <div className="govuk-width-container">
-        <div className="govuk-main-wrapper">
-          <p>Loading...</p>
-        </div>
-      </div>
-    );
-  }
-
-  if (!isAuthenticated) {
+  // Django resolves the session server-side, so the page simply appears (or
+  // redirects). Render nothing while the session check is in flight; the layout's
+  // header and footer stay in place.
+  if (isLoading || !isAuthenticated) {
     return null;
   }
 

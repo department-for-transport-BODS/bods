@@ -120,12 +120,12 @@ describe('app/data/avl/dataset/[id] (/avl/dataset/<pk>/)', () => {
   it('uses the 404 page title when the dataset is missing or the id is not numeric', async () => {
     mockFetch.mockResolvedValue(new Response('{}', { status: 404 }));
     expect(await generateMetadata(params('42'))).toEqual({
-      title: 'Page not found - Bus Open Data Service',
+      title: 'Page not found',
     });
 
     mockFetch.mockClear();
     expect(await generateMetadata(params('foo'))).toEqual({
-      title: 'Page not found - Bus Open Data Service',
+      title: 'Page not found',
     });
     expect(mockFetch).not.toHaveBeenCalled();
   });

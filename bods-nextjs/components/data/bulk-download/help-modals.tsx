@@ -8,6 +8,33 @@ import { DownloadHelpModal } from './DownloadHelpModal';
 const SIRI_INTRO =
   'The Service Interface for Real-time Information (SIRI) specifies a European interface standard for exchanging information about the planned, current or projected performance of real-time public transport operations between different computer systems. The latest UK profile of SIRI can be found';
 
+export function TxcHelp({ ptiPdfUrl }: { ptiPdfUrl: string }) {
+  return (
+    <DownloadHelpModal heading="TransXChange">
+      <p className="govuk-body">
+        TransXChange is the UK nationwide standard for exchanging bus schedules and related data. It
+        is used for:
+      </p>
+      <ul className="govuk-list govuk-list--bullet">
+        <li>The electronic registration of bus routes</li>
+        <li>The Traffic Area Network</li>
+        <li>
+          The exchange of bus routes with other computer systems such as journey planners and
+          vehicle real-time tracking systems
+        </li>
+      </ul>
+      <p className="govuk-body">
+        TransXChange is part of a family of coherent transport related XML standards that follow
+        GovTalk guidelines. The latest transxchange profile used on BODS can be{' '}
+        <a className="govuk-link" href={ptiPdfUrl} target="_blank">
+          found here
+        </a>
+        .
+      </p>
+    </DownloadHelpModal>
+  );
+}
+
 export function SiriVmHelp() {
   return (
     <DownloadHelpModal heading="SIRI-VM">

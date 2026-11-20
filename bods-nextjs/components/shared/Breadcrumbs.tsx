@@ -27,12 +27,13 @@ export function Breadcrumbs({ items }: BreadcrumbsProps) {
   return (
     <nav className="govuk-breadcrumbs" aria-label="Breadcrumb">
       <ol className="govuk-breadcrumbs__list">
-        {items.map((item) => {
+        {items.map((item, index) => {
           const label = formatLabel(item.label, item.truncateAt);
 
           return (
             <li
-              key={`${item.href ?? 'current'}-${item.label}`}
+              // Index keeps keys unique: Django's www pages repeat the same crumb twice.
+              key={`${index}-${item.href ?? 'current'}-${item.label}`}
               className="govuk-breadcrumbs__list-item"
               aria-current={item.current ? 'page' : undefined}
             >

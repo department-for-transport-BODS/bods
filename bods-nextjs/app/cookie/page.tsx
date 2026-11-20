@@ -2,6 +2,8 @@
  * Cookie Policy Page
  */
 
+export const metadata = { title: 'Cookies' };
+
 export default function CookiePage() {
   return (
     <div className="govuk-width-container">

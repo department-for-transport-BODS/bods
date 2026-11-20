@@ -13,7 +13,7 @@ export default function CancellationsPage() {
 }
 
 export const metadata = {
-  title: 'Browse Cancellation Data - Bus Open Data Service',
+  title: 'Browse Cancellation Data',
   description: 'Search and browse cancellations data.',
 };
 
