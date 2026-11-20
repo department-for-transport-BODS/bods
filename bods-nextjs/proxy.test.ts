@@ -19,6 +19,23 @@ describe('subdomain routing proxy', () => {
       process.env.NEXT_PUBLIC_BODS_BASE_DOMAIN = 'xyz.com';
     });
 
+    it.each([
+      ['www.xyz.com', '/healthcheck'],
+      ['admin.xyz.com', '/admin/healthcheck'],
+      ['10.0.0.1:3000', '/healthcheck'],
+      ['10.0.0.1:3000', '/admin/healthcheck'],
+    ])('returns an empty 200 for %s%s without forwarding the request', async (host, path) => {
+      const response = proxy(request(`http://${host}${path}?probe=1`, host, {
+        cookie: 'sessionid=existing-session',
+      }));
+
+      expect(response.status).toBe(200);
+      expect(await response.text()).toBe('');
+      expect(response.headers.get('location')).toBeNull();
+      expect(response.headers.get('x-middleware-rewrite')).toBeNull();
+      expect(response.headers.get('x-middleware-next')).toBeNull();
+    });
+
     it('rewrites clean publish URLs to the internal publish route', () => {
       const url = 'https://publish.xyz.com/org/42';
       const response = proxy(request(url, 'publish.xyz.com'));
