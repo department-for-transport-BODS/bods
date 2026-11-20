@@ -2,11 +2,13 @@ import logging
 
 from django.db import transaction
 from django.http import FileResponse
+from django.shortcuts import get_object_or_404
 from django.views.generic import View
 
 from transit_odp.avl.client import CAVLService
 from transit_odp.avl.post_publishing_checks.archive import PPCArchiveCreator
 from transit_odp.organisation.constants import DatasetType
+from transit_odp.organisation.models import Organisation
 from transit_odp.publish.views.base import (
     FeedArchiveBaseView,
     FeedArchiveSuccessBaseView,
@@ -40,9 +42,9 @@ class AVLFeedArchiveSuccessView(FeedArchiveSuccessBaseView):
 
 class PPCArchiveView(View):
     def get(self, *args, **kwargs):
-        org_id = self.kwargs["pk1"]
+        organisation = get_object_or_404(Organisation, id=self.kwargs["pk1"])
         archiver = PPCArchiveCreator()
-        four_week_buffer = archiver.create_archive(org_id)
+        four_week_buffer = archiver.create_archive(organisation.id)
         return self.render_to_response(
             four_week_buffer, "archived_avl_to_timetable_matching_all_feeds.zip"
         )

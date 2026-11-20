@@ -1,0 +1,25 @@
+{
+  "name": "bods-e2e",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Playwright tests for BODS Next.js migration flows",
+  "scripts": {
+    "test": "playwright test",
+    "test:headed": "playwright test --headed",
+    "test:debug": "playwright test --debug",
+    "test:ui": "playwright test --ui",
+    "test:chrome": "playwright test --project=chromium",
+    "test:firefox": "playwright test --project=firefox",
+    "test:webkit": "playwright test --project=webkit",
+    "test:ci": "playwright test --reporter=html,github",
+    "test:local": "playwright test --headed --workers=1",
+    "show-report": "playwright show-report",
+    "codegen": "playwright codegen"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.55.0",
+    "@types/node": "^24.0.0",
+    "dotenv": "^16.4.5",
+    "typescript": "^5.8.3"
+  }
+}

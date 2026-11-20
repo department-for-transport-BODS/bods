@@ -1,0 +1,59 @@
+.statusIndicator {
+  font-family: "GDS Transport", Arial, sans-serif;
+  white-space: nowrap;
+  position: relative;
+}
+
+.statusIndicator::before {
+  content: " ";
+  display: inline-block;
+  width: 1.125rem;
+  height: 1.125rem;
+  border-radius: 50%;
+  margin: 0 0.4rem 0 0.2rem;
+  vertical-align: middle;
+}
+
+.success::before {
+  background-color: #006435;
+}
+
+.warning::before {
+  background-color: #ffbf47;
+}
+
+.error::before {
+  background-color: #b10e1e;
+}
+
+.unavailable::before {
+  background-color: #f47738;
+}
+
+.sizeSmall {
+  font-size: 0.875rem;
+}
+
+.sizeMedium {
+  font-size: inherit;
+}
+
+.sizeLarge {
+  font-size: 1.25rem;
+}
+
+.stacked {
+  display: block;
+}
+
+.inline {
+  display: inline;
+}
+
+.stackedWrapper {
+  display: block;
+}
+
+.stackedLabel {
+  margin-bottom: 0.25rem;
+}

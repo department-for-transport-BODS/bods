@@ -1,0 +1,54 @@
+.stopMapContainer {
+  position: relative;
+  margin-bottom: 30px;
+}
+
+.mapContainer {
+  width: 100% !important;
+  height: 25rem !important;
+}
+
+.stopCount {
+  display: block;
+  margin-top: 10px;
+  color: #505a5f;
+  font-size: 16px;
+}
+
+.stopMarker {
+  transition: transform 0.2s;
+}
+
+.stopMarker:hover {
+  transform: scale(1.2);
+}
+
+:global(.mapboxgl-popup-content) {
+  padding: 12px;
+  background: #fff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+:global(.mapboxgl-popup-content h3) {
+  margin: 0 0 8px 0;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+:global(.mapboxgl-popup-content p) {
+  margin: 0;
+  font-size: 14px;
+  color: #505a5f;
+}
+
+:global(.mapboxgl-popup-anchor-top > .mapboxgl-popup-content) {
+  border-top: 3px solid #11b4da;
+}
+
+:global(.mapboxgl-popup-anchor-top > .mapboxgl-popup-tip) {
+  border-bottom-color: #11b4da;
+}
+
+:global(.mapboxgl-popup-anchor-bottom > .mapboxgl-popup-tip) {
+  border-top-color: #11b4da;
+}

@@ -52,6 +52,21 @@ def test_unavailable_dq_rag(client_factory, user_factory):
     assert api_dataset["dqScore"] == "0.0%"
 
 
+def test_dataset_ids_match_legacy_detail_page_contract(client_factory, user_factory):
+    developer = user_factory(account_type=DeveloperType)
+    url = reverse("api:feed-list", host=DATA_HOST)
+    client = client_factory(host=DATA_HOST)
+    client.force_login(user=developer)
+
+    report = DataQualityReportFactory(score=1)
+
+    response = client.get(url)
+    api_dataset = response.data["results"][0]
+
+    assert api_dataset["revisionId"] == report.revision_id
+    assert api_dataset["organisationId"] == report.revision.dataset.organisation_id
+
+
 def test_dq_rag_with_active_filtering(client_factory, user_factory):
     developer = user_factory(account_type=DeveloperType)
     url = reverse("api:feed-list", host=DATA_HOST)

@@ -1,0 +1,49 @@
+/*
+ * Ported from the Django frontend so the "Service codes requiring attention"
+ * tables match: transit_odp/frontend/assets/sass/components/table/_table.scss
+ * and transit_odp/frontend/assets/sass/common.scss.
+ */
+.custom_govuk_table_border {
+  border: solid 1px #979797;
+  padding: 20px;
+}
+
+.custom_govuk_table .column-header-link {
+  color: #1d70b8;
+  font-size: 18px;
+  font-weight: normal;
+  text-decoration: none;
+}
+
+.custom_govuk_table .column-header-link:focus {
+  color: #0b0c0c;
+  background-color: #fd0;
+  box-shadow: 0 -2px #fd0, 0 4px #0b0c0c;
+  text-decoration: none;
+  outline: 3px solid transparent;
+}
+
+/* Show the up / down triangle only if asc / desc present */
+.custom_govuk_table .order-up,
+.custom_govuk_table .order-down {
+  display: none;
+}
+
+.custom_govuk_table .asc a,
+.custom_govuk_table .desc a {
+  font-weight: bold;
+}
+
+.custom_govuk_table .asc .order-up,
+.custom_govuk_table .desc .order-down {
+  display: inline;
+}
+
+.custom_govuk_table .hide-using-position {
+  position: absolute;
+  overflow: hidden;
+  height: 1px;
+  width: 1px;
+  padding: 0;
+  margin: 0;
+}

@@ -29,6 +29,11 @@ if READ_DOT_ENV_FILE:
 # ------------------------------------------------------------------------------
 # https://docs.djangoproject.com/en/dev/ref/settings/#debug
 DEBUG = env.bool("DJANGO_DEBUG", False)
+# https://docs.djangoproject.com/en/dev/ref/settings/#secret-key
+SECRET_KEY = env(
+    "DJANGO_SECRET_KEY",
+    default="X61BMLHfhL8X8lPce9YuOVZ5N0YPfLqwFGcKJQPdZaOmBQ3MOvQQ6T3yLNvR0vCC",
+)
 # Local time zone. Choices are
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
 # though not all of them may be available with every OS.
@@ -90,6 +95,11 @@ ALLOWED_HOSTS += [
     f"{ADMIN_SUBDOMAIN}.{PARENT_HOST}",
 ]
 
+CSRF_TRUSTED_ORIGINS = env.list(
+    "DJANGO_CSRF_TRUSTED_ORIGINS",
+    default=[f"https://{ROOT_SUBDOMAIN}.{PARENT_HOST}"],
+)
+
 # https://github.com/ottoyiu/django-cors-headers#cors_origin_whitelist
 CORS_ORIGIN_REGEX_WHITELIST = (
     rf"^(https?://)?([\w-]+\.)?{PARENT_HOST}(:{HOST_PORT})?$",
@@ -111,6 +121,8 @@ SESSION_COOKIE_AGE = 600  # set to 10 minutes
 # Whether to save the session data on every request
 SESSION_SAVE_EVERY_REQUEST = True
 
+SESSION_COOKIE_SAMESITE = "Lax"
+
 # APPS
 # ------------------------------------------------------------------------------
 DJANGO_APPS = [
@@ -130,6 +142,7 @@ THIRD_PARTY_APPS = [
     "crispy_forms",
     "allauth",
     "allauth.account",
+    "allauth.socialaccount",
     "invitations",
     "corsheaders",
     "rest_framework",
@@ -478,6 +491,17 @@ REST_FRAMEWORK = {
     "DEFAULT_RENDERER_CLASSES": ["rest_framework.renderers.JSONRenderer"],
     "DEFAULT_SCHEMA_CLASS": "rest_framework.schemas.coreapi.AutoSchema",
     "EXCEPTION_HANDLER": "rest_framework.views.exception_handler",
+    "DEFAULT_THROTTLE_CLASSES": [
+        "rest_framework.throttling.ScopedRateThrottle",
+    ],
+    "DEFAULT_THROTTLE_RATES": {
+        "login": "5/min",
+        "account-signup": "10/hour",
+        "account-email-confirmation": "20/hour",
+        "account-password-change": "10/hour",
+        "account-password-reset": "10/hour",
+        "account-invite-accept": "20/hour",
+    },
 }
 
 # GOV.NOTIFY API KEY

@@ -96,6 +96,8 @@ class FaresDatasetSerializer(serializers.ModelSerializer):
 
 class DatasetSerializer(serializers.Serializer):
     id = serializers.IntegerField()
+    organisationId = serializers.IntegerField(source="organisation.id")
+    revisionId = serializers.IntegerField(source="live_revision.id")
     created = serializers.DateTimeField(format=GMT_FORMAT)
     modified = serializers.DateTimeField(
         format=GMT_FORMAT, source="live_revision.published_at"

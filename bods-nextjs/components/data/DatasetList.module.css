@@ -1,0 +1,14 @@
+.datasetList {
+  margin-top: 20px;
+}
+
+.items {
+  margin-bottom: 30px;
+}
+
+.empty {
+  text-align: center;
+  padding: 40px 20px;
+  background-color: #f3f2f1;
+  border-radius: 4px;
+}

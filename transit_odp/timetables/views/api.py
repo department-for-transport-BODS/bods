@@ -1,0 +1,618 @@
+from django.contrib.auth import get_user
+from django.db import transaction
+from django.db.models import Q
+from django.http import JsonResponse
+from django.views.decorators.http import (
+    require_GET,
+    require_http_methods,
+    require_POST,
+)
+from django_hosts import reverse
+from waffle import flag_is_active
+
+import config.hosts
+from transit_odp.browse.views.dataset_subpages_api import (
+    DATASET_KINDS,
+    build_changelog_response,
+)
+from transit_odp.publish.forms import (
+    FeedCommentForm,
+    FeedDescriptionForm,
+    FeedUploadForm,
+)
+from transit_odp.publish.views.review_list_api import (
+    TIMETABLE,
+    build_review_list_response,
+)
+from transit_odp.publish.views.timetable.changelog import TimetableChangeLogView
+from transit_odp.publish.views.timetable.list import ListView as TimetableListView
+from transit_odp.publish.views.utils import get_distinct_dataset_txc_attributes
+from transit_odp.data_quality.models import SchemaViolation
+from transit_odp.data_quality.models.report import PostSchemaViolation, PTIObservation
+from transit_odp.data_quality.report_summary import Summary
+from transit_odp.data_quality.scoring import get_data_quality_rag
+from transit_odp.dqs.constants import ReportStatus
+from transit_odp.dqs.models import Report
+from transit_odp.timetables.tasks import delete_dataset_revision, task_dataset_pipeline
+from transit_odp.timetables.views.constants import ERROR_CODE_LOOKUP
+from transit_odp.organisation.constants import DatasetType, FeedStatus
+from transit_odp.organisation.models import Dataset, DatasetRevision, Organisation
+from transit_odp.publish.views.trigger_state_machine import trigger_state_machine
+
+
+FIRST_PUBLICATION_COMMENT = "First publication"
+LOADING_STATUSES = {"indexing", "processing", "pending"}
+AUTH_REQUIRED_ERROR = "Authentication required"
+ORG_ACCESS_REQUIRED_ERROR = "Org user access required"
+ORG_NOT_FOUND_ERROR = "Organisation not found"
+REVISION_NOT_FOUND_ERROR = "Dataset revision not found"
+DATASET_NOT_FOUND_ERROR = "Dataset not found"
+DRAFT_EXISTS_ERROR = "A draft update already exists"
+
+
+def _authenticate_user(request):
+    """Return the authenticated Django session user."""
+    session_user = get_user(request)
+    if session_user is not None and session_user.is_authenticated:
+        return session_user
+    return None
+
+
+def _get_user_org(user, org_id):
+    try:
+        return user.organisations.get(id=org_id)
+    except Organisation.DoesNotExist:
+        return None
+
+
+def _get_revision_for_dataset(org_id, dataset_id):
+    return (
+        DatasetRevision.objects.filter(
+            dataset_id=dataset_id,
+            dataset__organisation_id=org_id,
+            is_published=False,
+        )
+        .order_by("-id")
+        .first()
+    )
+
+
+def _upsert_draft_revision(dataset: Dataset, all_data: dict) -> DatasetRevision:
+    return DatasetRevision.objects.filter(
+        Q(dataset=dataset) & Q(is_published=False)
+    ).update_or_create(dataset=dataset, is_published=False, defaults=all_data)[0]
+
+
+def _trigger_timetables_processing(revision: DatasetRevision) -> None:
+    is_serverless_publishing_active = flag_is_active(
+        "", "is_serverless_publishing_active"
+    )
+
+    if not is_serverless_publishing_active:
+        if revision.status != FeedStatus.pending.value:
+            revision.to_pending()
+            revision.save()
+
+        transaction.on_commit(lambda: task_dataset_pipeline.delay(revision.id))
+    else:
+        trigger_state_machine(revision, "timetables")
+
+
+def _delete_timetable_review_data(revision: DatasetRevision) -> None:
+    revision.schema_violations.all().delete()
+    revision.post_schema_violations.all().delete()
+    revision.txc_file_attributes.all().delete()
+    revision.pti_observations.all().delete()
+    revision.service_patterns.all().delete()
+    revision.dqs_report.all().delete()
+
+
+def _get_revision_progress(revision: DatasetRevision):
+    progress = 0
+    latest_task = revision.etl_results.order_by("-id").first()
+    error_code = None
+
+    if latest_task is not None:
+        progress = latest_task.progress or 0
+        error_code = latest_task.error_code
+        if error_code:
+            progress = 100
+
+    return progress, error_code
+
+
+def _is_loading_status(status: str) -> bool:
+    return status in LOADING_STATUSES
+
+
+@require_GET
+def get_timetables_data_quality_status_api(request, pk1, pk):
+    _, _, revision, error_response = _get_request_context(request, pk1, pk)
+    if error_response is not None:
+        return error_response
+
+    if flag_is_active("", "is_new_data_quality_service_active"):
+        has_report = Report.objects.filter(
+            revision_id=revision.id,
+            status__in=[
+                ReportStatus.REPORT_GENERATED.value,
+                ReportStatus.REPORT_GENERATION_FAILED.value,
+            ],
+        ).exists()
+        status = "SUCCESS" if has_report else "PENDING"
+    else:
+        status = revision.data_quality_tasks.get_latest_status() or "PENDING"
+
+    return JsonResponse(status, safe=False)
+
+
+def _iso_or_none(value):
+    if value is None:
+        return None
+    return value.isoformat()
+
+
+def _serialise_txc_attributes(attributes):
+    return {
+        licence_number: {
+            noc: {
+                line_name: sorted(service_codes)
+                for line_name, service_codes in lines.items()
+            }
+            for noc, lines in nocs.items()
+        }
+        for licence_number, nocs in attributes.items()
+    }
+
+
+def _get_request_context(request, org_id, dataset_id=None):
+    user = _authenticate_user(request)
+    if user is None or not user.is_authenticated:
+        return (
+            None,
+            None,
+            None,
+            JsonResponse({"error": AUTH_REQUIRED_ERROR}, status=401),
+        )
+
+    if not user.is_org_user:
+        return (
+            None,
+            None,
+            None,
+            JsonResponse(
+                {"error": ORG_ACCESS_REQUIRED_ERROR},
+                status=403,
+            ),
+        )
+
+    organisation = _get_user_org(user, org_id)
+    if organisation is None:
+        return (
+            None,
+            None,
+            None,
+            JsonResponse({"error": ORG_NOT_FOUND_ERROR}, status=404),
+        )
+
+    revision = None
+    if dataset_id is not None:
+        revision = _get_revision_for_dataset(org_id, dataset_id)
+        if revision is None:
+            return (
+                None,
+                None,
+                None,
+                JsonResponse(
+                    {"error": REVISION_NOT_FOUND_ERROR},
+                    status=404,
+                ),
+            )
+
+    return user, organisation, revision, None
+
+
+@require_POST
+def create_timetables_dataset_api(request, pk1):
+    user, organisation, _, error_response = _get_request_context(request, pk1)
+    if error_response is not None:
+        return error_response
+
+    description_form = FeedDescriptionForm(data=request.POST)
+    if not description_form.is_valid():
+        return JsonResponse(
+            {
+                "error": "Description validation failed",
+                "field_errors": description_form.errors,
+            },
+            status=400,
+        )
+
+    upload_form = FeedUploadForm(data=request.POST, files=request.FILES)
+    if not upload_form.is_valid():
+        return JsonResponse(
+            {
+                "error": "Upload validation failed",
+                "field_errors": upload_form.errors,
+            },
+            status=400,
+        )
+
+    all_data = {}
+    all_data.update(description_form.cleaned_data)
+    all_data.update(upload_form.cleaned_data)
+    all_data["last_modified_user"] = user
+    all_data["comment"] = FIRST_PUBLICATION_COMMENT
+
+    with transaction.atomic():
+        dataset = Dataset.objects.create(
+            contact=user,
+            organisation_id=organisation.id,
+            dataset_type=DatasetType.TIMETABLE.value,
+        )
+
+        revision = _upsert_draft_revision(dataset, all_data)
+        _trigger_timetables_processing(revision)
+
+    review_url = f"/publish/org/{organisation.id}/dataset/timetable/{dataset.id}/review"
+
+    return JsonResponse({"redirect": review_url}, status=201)
+
+
+def _modify_timetables_draft(request, user, pk1, pk):
+    """Django ``TimetableUploadModify`` / ``DatasetUpdateModify``: replace the
+    data of the existing draft revision."""
+    revision = _get_revision_for_dataset(pk1, pk)
+    if revision is None:
+        return JsonResponse({"error": REVISION_NOT_FOUND_ERROR}, status=404)
+
+    upload_form = FeedUploadForm(
+        data=request.POST,
+        files=request.FILES,
+        instance=revision,
+        is_revision_modify=True,
+    )
+    if not upload_form.is_valid():
+        return JsonResponse(
+            {"error": "Upload validation failed", "field_errors": upload_form.errors},
+            status=400,
+        )
+
+    with transaction.atomic():
+        _delete_timetable_review_data(revision)
+        for key, value in upload_form.cleaned_data.items():
+            setattr(revision, key, value)
+        revision.last_modified_user = user
+        revision.save()
+        _trigger_timetables_processing(revision)
+
+    # DatasetUpdateModify returns to update/review, TimetableUploadModify to review.
+    is_update = request.POST.get("is_update") == "true"
+    review_path = "update/review" if is_update else "review"
+    return JsonResponse(
+        {"redirect": f"/publish/org/{pk1}/dataset/timetable/{pk}/{review_path}"},
+        status=201,
+    )
+
+
+def _start_timetables_update(request, user, dataset):
+    """Django ``FeedUpdateWizard``: start a new draft revision from the live
+    data set with a comment and new data."""
+    if dataset.revisions.get_draft().exists():
+        return JsonResponse({"error": DRAFT_EXISTS_ERROR}, status=409)
+
+    revision = dataset.start_revision()
+    comment_form = FeedCommentForm(data=request.POST, instance=revision, is_update=True)
+    if not comment_form.is_valid():
+        return JsonResponse(
+            {
+                "error": "Comment validation failed",
+                "field_errors": comment_form.errors,
+            },
+            status=400,
+        )
+
+    upload_form = FeedUploadForm(
+        data=request.POST, files=request.FILES, instance=revision, is_update=True
+    )
+    if not upload_form.is_valid():
+        return JsonResponse(
+            {"error": "Upload validation failed", "field_errors": upload_form.errors},
+            status=400,
+        )
+
+    all_data = {}
+    all_data.update(comment_form.cleaned_data)
+    all_data.update(upload_form.cleaned_data)
+    all_data["last_modified_user"] = user
+
+    with transaction.atomic():
+        for key, value in all_data.items():
+            setattr(revision, key, value)
+        revision.save()
+        _trigger_timetables_processing(revision)
+
+    return JsonResponse(
+        {
+            "redirect": (
+                f"/publish/org/{dataset.organisation_id}/dataset/timetable/"
+                f"{dataset.id}/update/review"
+            )
+        },
+        status=201,
+    )
+
+
+@require_http_methods(["GET", "POST"])
+def update_timetables_dataset_api(request, pk1, pk):
+    user, organisation, _, error_response = _get_request_context(request, pk1)
+    if error_response is not None:
+        return error_response
+
+    dataset = Dataset.objects.filter(
+        id=pk,
+        organisation_id=organisation.id,
+        dataset_type=DatasetType.TIMETABLE.value,
+    ).first()
+    if dataset is None:
+        return JsonResponse({"error": DATASET_NOT_FOUND_ERROR}, status=404)
+
+    if request.method == "GET":
+        # Django's FeedUpdateWizard binds its upload form to ``start_revision()``,
+        # which copies the live revision's URL link.
+        return JsonResponse({"urlLink": dataset.start_revision().url_link or ""})
+
+    if request.POST.get("modify_draft") == "true":
+        return _modify_timetables_draft(request, user, pk1, pk)
+    return _start_timetables_update(request, user, dataset)
+
+
+@require_GET
+def get_timetables_review_status_api(request, pk1, pk):
+    if request.GET.get("revision") == "live":
+        # Django's delete view picks its cancel URL from the live revision's status.
+        _, organisation, _, error_response = _get_request_context(request, pk1)
+        if error_response is not None:
+            return error_response
+
+        dataset = (
+            Dataset.objects.select_related("live_revision")
+            .filter(
+                id=pk,
+                organisation_id=organisation.id,
+                dataset_type=DatasetType.TIMETABLE.value,
+            )
+            .first()
+        )
+        if dataset is None:
+            return JsonResponse({"error": DATASET_NOT_FOUND_ERROR}, status=404)
+
+        revision = dataset.live_revision
+        if revision is None:
+            return JsonResponse({"error": REVISION_NOT_FOUND_ERROR}, status=404)
+    else:
+        _, _, revision, error_response = _get_request_context(request, pk1, pk)
+        if error_response is not None:
+            return error_response
+
+    progress, error_code = _get_revision_progress(revision)
+
+    status = revision.status
+    is_loading = _is_loading_status(status)
+
+    has_schema_violation = False
+    has_post_schema_violation = False
+    has_pti_observations = False
+    validation_report_url = f"/org/{pk1}/dataset/timetable/{pk}/review/pti-csv"
+
+    if not is_loading:
+        has_schema_violation = SchemaViolation.objects.filter(
+            revision=revision.id
+        ).exists()
+        has_post_schema_violation = PostSchemaViolation.objects.filter(
+            revision=revision.id
+        ).exists()
+        has_pti_observations = PTIObservation.objects.filter(
+            revision=revision.id
+        ).exists()
+
+    validation_state = "passed"
+    if has_schema_violation or has_post_schema_violation or has_pti_observations:
+        validation_state = "passed-with-issues"
+    if error_code:
+        validation_state = "failed"
+
+    data_quality_status = "PENDING"
+    data_quality_score = None
+    data_quality_rag = None
+    critical_count = 0
+    advisory_count = 0
+    has_critical_issues = None
+    data_quality_report_id = None
+    show_update = False
+
+    if not is_loading:
+        if flag_is_active("", "is_new_data_quality_service_active"):
+            report = (
+                Report.objects.filter(revision_id=revision.id)
+                .order_by("-created")
+                .filter(
+                    status__in=[
+                        ReportStatus.REPORT_GENERATED.value,
+                        ReportStatus.REPORT_GENERATION_FAILED.value,
+                    ]
+                )
+                .first()
+            )
+            if report:
+                data_quality_status = "SUCCESS"
+                summary = Summary.get_report(report.id, revision.id)
+                # Counts are numpy ints from pandas, which JsonResponse can't serialise.
+                critical_count = int(summary.data.get("Critical", {}).get("count", 0))
+                advisory_count = int(summary.data.get("Advisory", {}).get("count", 0))
+                has_critical_issues = critical_count > 0
+                data_quality_report_id = report.id
+                show_update = True
+        else:
+            tasks = revision.data_quality_tasks
+            task_status = tasks.get_latest_status()
+            data_quality_status = task_status or "PENDING"
+            if task_status == "SUCCESS":
+                report = tasks.latest().report
+                summary = Summary.from_report_summary(report.summary)
+                data_quality_score = getattr(report, "score", None)
+                data_quality_rag = get_data_quality_rag(report)
+                critical_count = int(summary.data.get("Critical", {}).get("count", 0))
+                advisory_count = int(summary.data.get("Advisory", {}).get("count", 0))
+                show_update = revision.is_pti_compliant()
+
+    error_description = None
+    if error_code:
+        error_description = ERROR_CODE_LOOKUP.get(
+            error_code, ERROR_CODE_LOOKUP.get("SYSTEM_ERROR")
+        )["description"]
+
+    txc_attributes = revision.txc_file_attributes.all() if not is_loading else []
+    metadata = [
+        {
+            "filename": attr.filename,
+            "serviceCode": attr.service_code,
+            "nationalOperatorCode": attr.national_operator_code,
+            "lineNames": attr.line_names,
+            "origin": attr.origin,
+            "destination": attr.destination,
+            "operatingPeriodStartDate": _iso_or_none(attr.operating_period_start_date),
+            "operatingPeriodEndDate": _iso_or_none(attr.operating_period_end_date),
+            "schemaVersion": attr.schema_version,
+            "revisionNumber": attr.revision_number,
+            "modification": attr.modification,
+            "serviceMode": attr.service_mode,
+        }
+        for attr in txc_attributes
+    ]
+
+    download_url = revision.url_link
+    if not download_url:
+        download_url = (
+            reverse(
+                "feed-download",
+                kwargs={"pk1": pk1, "pk": pk},
+                host=config.hosts.PUBLISH_HOST,
+            )
+            + "?is_review=true"
+        )
+
+    last_modified_user = None
+    if revision.last_modified_user is not None:
+        last_modified_user = revision.last_modified_user.username
+
+    # Django's feed_delete.html branches on ``object.live_revision``.
+    has_live_revision = revision.dataset.live_revision_id is not None
+
+    return JsonResponse(
+        {
+            "datasetId": revision.dataset_id,
+            "revisionId": revision.id,
+            "status": status,
+            "progress": progress,
+            "loading": is_loading,
+            "hasLiveRevision": has_live_revision,
+            "name": revision.name,
+            "description": revision.description,
+            "shortDescription": revision.short_description,
+            "urlLink": revision.url_link,
+            "ownerName": revision.dataset.organisation.name,
+            "downloadUrl": download_url,
+            "lastModified": _iso_or_none(revision.modified),
+            "lastModifiedUser": last_modified_user,
+            "metadata": metadata,
+            "error": error_code,
+            "errorDescription": error_description,
+            "validationState": validation_state,
+            "validationReportUrl": validation_report_url,
+            "hasSchemaViolation": has_schema_violation,
+            "hasPostSchemaViolation": has_post_schema_violation,
+            "hasPtiObservations": has_pti_observations,
+            "dataQuality": {
+                "status": data_quality_status,
+                "score": data_quality_score,
+                "ragLevel": data_quality_rag.rag_level if data_quality_rag else None,
+                "criticalCount": critical_count,
+                "advisoryCount": advisory_count,
+                "hasCriticalIssues": has_critical_issues,
+                "reportId": data_quality_report_id,
+                "showUpdate": show_update,
+            },
+            "transxchangeVersion": getattr(revision, "transxchange_version", None),
+            "publisherUrl": revision.url_link or download_url,
+            "distinctAttributes": (
+                _serialise_txc_attributes(
+                    get_distinct_dataset_txc_attributes(revision.id)
+                )
+                if not is_loading
+                else {}
+            ),
+        },
+        status=200,
+    )
+
+
+@require_GET
+def get_timetables_changelog_api(request, pk1, pk):
+    """Paginated changelog for a timetable dataset (Django: ``feed-changelog``)."""
+    _, _, _, error_response = _get_request_context(request, pk1)
+    if error_response is not None:
+        return error_response
+
+    view = TimetableChangeLogView()
+    view.setup(request, pk1=pk1, pk=pk)
+    return build_changelog_response(view, request, DATASET_KINDS["timetables"])
+
+
+@require_GET
+def get_timetables_list_api(request, pk1):
+    return build_review_list_response(request, pk1, TimetableListView, TIMETABLE)
+
+
+@require_POST
+def publish_timetables_dataset_api(request, pk1, pk):
+    user, _, revision, error_response = _get_request_context(request, pk1, pk)
+    if error_response is not None:
+        return error_response
+
+    if _is_loading_status(revision.status):
+        return JsonResponse({"error": "Dataset is still processing"}, status=409)
+
+    # Django: PublishRevisionView -> success/, UpdateRevisionPublishView ->
+    # update/success/. Only an update has a live revision before publishing.
+    success_path = "update/success" if revision.dataset.live_revision_id else "success"
+
+    if not revision.is_published:
+        revision.publish(user)
+
+    return JsonResponse(
+        {
+            "redirect": f"/publish/org/{pk1}/dataset/timetable/{pk}/{success_path}",
+            "published": True,
+        },
+        status=200,
+    )
+
+
+@require_POST
+def delete_timetables_dataset_api(request, pk1, pk):
+    _, _, revision, error_response = _get_request_context(request, pk1, pk)
+    if error_response is not None:
+        return error_response
+
+    delete_queued = not revision.is_published
+    if delete_queued:
+        delete_dataset_revision.delay(revision.id)
+
+    return JsonResponse(
+        {
+            "redirect": f"/publish/org/{pk1}/dataset/timetable/delete-success",
+            "delete_queued": delete_queued,
+        },
+        status=200,
+    )

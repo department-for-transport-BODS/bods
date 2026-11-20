@@ -2,8 +2,7 @@ on:
   push:
     branches:
     - 'dev'
-    paths:
-    - version.txt
+    - 'DBODS-679/bodstwo'
   workflow_dispatch:
 
 name: 'dev_deployment'
@@ -18,6 +17,7 @@ defaults:
 
 env:
   ECR_REPOSITORY_NAME: ${{ secrets.ECR_REPOSITORY }}
+  ECR_NEXTJS_REPOSITORY_NAME: ${{ secrets.ECR_NEXTJS_REPOSITORY }}
   ECR_BASE_REPOSITORY_NAME: ${{ secrets.ECR_BASE_REPOSITORY }}
   ENVIRONMENT_NAME: dev
   AWS_REGION: ${{ vars.AWS_REGION }}
@@ -25,11 +25,15 @@ env:
   PROD_ASSUME_ROLE_ARN: ${{ vars.PROD_ASSUME_ROLE_ARN }}
 
 jobs:
-  dev_deployment:
-    name: 'dev_deployment'
+  build_and_push:
+    name: 'build_and_push'
     runs-on: ubuntu-latest
     environment:
       name: dev
+    outputs:
+      registry: ${{ steps.login-ecr.outputs.registry }}
+      django_tag: ${{ steps.set-version-number.outputs.version }}
+      nextjs_tag: ${{ steps.nextjs-image.outputs.tag }}
 
     steps:
     - name: Checkout
@@ -93,7 +97,6 @@ jobs:
            - ./docker/production/django_base/Dockerfile
 
     - name: Build, tag, and push base image to Amazon ECR
-      if: steps.base-image-changes.outputs.django_base == 'true'
       env:
         ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         ECR_REPOSITORY: ${{ env.ECR_BASE_REPOSITORY_NAME }}
@@ -112,9 +115,38 @@ jobs:
         docker build -t ${{ steps.check-image.outputs.image }} -f ./docker/production/django/Dockerfile --cache-from $ECR_REGISTRY/$ECR_REPOSITORY:latest --build-arg BASE_IMAGE=$ECR_REGISTRY/$ECR_BASE_REPOSITORY:latest .
         docker push $ECR_REGISTRY/$ECR_REPOSITORY --all-tags
 
+    - name: Set Next.js image tag
+      id: nextjs-image
+      run: |
+        version=$(node --input-type=module -e "import packageJson from './bods-nextjs/package.json' with { type: 'json' }; console.log(packageJson.version)")
+        tag="${version}-$(date -u +'%Y%m%d%H%M%S')-${GITHUB_SHA::7}"
+        echo "tag=${tag}" >> "$GITHUB_OUTPUT"
+        echo "image=${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_NEXTJS_REPOSITORY_NAME }}:${tag}" >> "$GITHUB_OUTPUT"
+
+    - name: Build and push Next.js image
+      run: |
+        docker build \
+          --tag "${{ steps.nextjs-image.outputs.image }}" \
+          --file docker/production/nextjs/Dockerfile \
+          --build-arg NEXT_PUBLIC_BODS_BASE_DOMAIN=dev.bus-data.dft.gov.uk \
+          .
+        docker push "${{ steps.nextjs-image.outputs.image }}"
+
     - name: Logout of Amazon ECR
       if: always()
       run: docker logout ${{ steps.login-ecr.outputs.registry }}
+
+  # Runs concurrently with deploy_nextjs - both only depend on build_and_push.
+  deploy_django:
+    name: 'deploy_django'
+    needs: build_and_push
+    runs-on: ubuntu-latest
+    environment:
+      name: dev
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # 6.0.3
 
     # Configure AWS credentials against the BODS Shared-Services account
     - name: Configure AWS credentials in Shared-Services
@@ -125,7 +157,6 @@ jobs:
         role-session-name: ${{ env.ENVIRONMENT_NAME }}-deployment
         role-duration-seconds: 3600
         role-skip-session-tagging: true
-        unset-current-credentials: true
 
     # Now assume a role in the Environment Specific account
     - name: Configure AWS Credentials in the environment specific account
@@ -144,7 +175,7 @@ jobs:
         service: celeryflower
         container: celeryflower
         task_definition_family: bodds_celeryflower_${{ env.ENVIRONMENT_NAME }}
-        image_id: ${{ steps.check-image.outputs.image }}
+        image_id: ${{ needs.build_and_push.outputs.registry }}/${{ env.ECR_REPOSITORY_NAME }}:${{ needs.build_and_push.outputs.django_tag }}
         cluster_name: bodds-${{ env.ENVIRONMENT_NAME }}
         wait_for_service_stability: false
 
@@ -154,7 +185,7 @@ jobs:
         service: celeryworker
         container: celeryworker
         task_definition_family: bodds_celeryworker_${{ env.ENVIRONMENT_NAME }}
-        image_id: ${{ steps.check-image.outputs.image }}
+        image_id: ${{ needs.build_and_push.outputs.registry }}/${{ env.ECR_REPOSITORY_NAME }}:${{ needs.build_and_push.outputs.django_tag }}
         cluster_name: bodds-${{ env.ENVIRONMENT_NAME }}
         wait_for_service_stability: false
 
@@ -164,7 +195,7 @@ jobs:
         service: celerybeat
         container: celerybeat
         task_definition_family: bodds_celerybeat_${{ env.ENVIRONMENT_NAME }}
-        image_id: ${{ steps.check-image.outputs.image }}
+        image_id: ${{ needs.build_and_push.outputs.registry }}/${{ env.ECR_REPOSITORY_NAME }}:${{ needs.build_and_push.outputs.django_tag }}
         cluster_name: bodds-${{ env.ENVIRONMENT_NAME }}
         wait_for_service_stability: false
 
@@ -174,7 +205,7 @@ jobs:
         service: frontend
         container: frontend
         task_definition_family: bodds_frontend_${{ env.ENVIRONMENT_NAME }}
-        image_id: ${{ steps.check-image.outputs.image }}
+        image_id: ${{ needs.build_and_push.outputs.registry }}/${{ env.ECR_REPOSITORY_NAME }}:${{ needs.build_and_push.outputs.django_tag }}
         cluster_name: bodds-${{ env.ENVIRONMENT_NAME }}
         wait_for_service_stability: false
 
@@ -184,7 +215,7 @@ jobs:
         service: api_frontend
         container: frontend
         task_definition_family: bodds_api_frontend_${{ env.ENVIRONMENT_NAME }}
-        image_id: ${{ steps.check-image.outputs.image }}
+        image_id: ${{ needs.build_and_push.outputs.registry }}/${{ env.ECR_REPOSITORY_NAME }}:${{ needs.build_and_push.outputs.django_tag }}
         cluster_name: bodds-${{ env.ENVIRONMENT_NAME }}
         wait_for_service_stability: false
 
@@ -194,7 +225,7 @@ jobs:
         service: api_frontend_internal
         container: frontend
         task_definition_family: bodds_api_frontend_internal_${{ env.ENVIRONMENT_NAME }}
-        image_id: ${{ steps.check-image.outputs.image }}
+        image_id: ${{ needs.build_and_push.outputs.registry }}/${{ env.ECR_REPOSITORY_NAME }}:${{ needs.build_and_push.outputs.django_tag }}
         cluster_name: bodds-${{ env.ENVIRONMENT_NAME }}
         wait_for_service_stability: false
 
@@ -204,7 +235,7 @@ jobs:
         service: pg_migration
         container: db-migrate
         environment: ${{ env.ENVIRONMENT_NAME }}
-        image_id: ${{ steps.check-image.outputs.image }}
+        image_id: ${{ needs.build_and_push.outputs.registry }}/${{ env.ECR_REPOSITORY_NAME }}:${{ needs.build_and_push.outputs.django_tag }}
 
     - name: Update pg_superuser
       uses: "./.github/workflows/templates/register_task_def"
@@ -212,7 +243,7 @@ jobs:
         service: pg_superuser
         container: pg-superuser
         environment: ${{ env.ENVIRONMENT_NAME }}
-        image_id: ${{ steps.check-image.outputs.image }}
+        image_id: ${{ needs.build_and_push.outputs.registry }}/${{ env.ECR_REPOSITORY_NAME }}:${{ needs.build_and_push.outputs.django_tag }}
 
     - name: Wait for ECS service stability
       uses: department-for-transport-BODS/.github/actions/wait-for-ecs-service-stability@v1
@@ -238,3 +269,49 @@ jobs:
         subnets: ${{ steps.params.outputs.SUBNETS }}
         security_groups: ${{ steps.params.outputs.SECURITY_GROUPS }}
         environment: ${{ env.ENVIRONMENT_NAME }}
+
+  # Runs concurrently with deploy_django - both only depend on build_and_push.
+  deploy_nextjs:
+    name: 'deploy_nextjs'
+    needs: build_and_push
+    runs-on: ubuntu-latest
+    environment:
+      name: dev
+
+    steps:
+    # Configure AWS credentials against the BODS Shared-Services account
+    - name: Configure AWS credentials in Shared-Services
+      uses: aws-actions/configure-aws-credentials@e7f100cf4c008499ea8adda475de1042d6975c7b # 6.2.0
+      with:
+        aws-region: ${{ env.AWS_REGION }}
+        role-to-assume: ${{ env.BODS_DEFAULT_GITHUB_ACTIONS_ASSUME_ROLE_ARN }}
+        role-session-name: ${{ env.ENVIRONMENT_NAME }}-deployment
+        role-duration-seconds: 3600
+        role-skip-session-tagging: true
+
+    # Now assume a role in the Environment Specific account
+    - name: Configure AWS Credentials in the environment specific account
+      uses: aws-actions/configure-aws-credentials@e7f100cf4c008499ea8adda475de1042d6975c7b # 6.2.0
+      with:
+        aws-region: ${{ vars.AWS_REGION }}
+        role-to-assume: ${{ vars.ASSUME_ROLE_ARN }}
+        role-session-name: testAWSCLISession
+        role-duration-seconds: 3600
+        role-skip-session-tagging: true
+        role-chaining: true
+
+    - name: Update frontend_v2 task
+      uses: department-for-transport-BODS/.github/actions/update-ecs-task-definition@v1
+      with:
+        service: frontend_v2
+        container: frontend_v2
+        task_definition_family: bodds_frontend_v2_${{ env.ENVIRONMENT_NAME }}
+        image_id: ${{ needs.build_and_push.outputs.registry }}/${{ env.ECR_NEXTJS_REPOSITORY_NAME }}:${{ needs.build_and_push.outputs.nextjs_tag }}
+        cluster_name: bodds-${{ env.ENVIRONMENT_NAME }}
+        wait_for_service_stability: false
+
+    - name: Wait for frontend_v2 service stability
+      uses: department-for-transport-BODS/.github/actions/wait-for-ecs-service-stability@v1
+      with:
+        cluster_name: bodds-${{ env.ENVIRONMENT_NAME }}
+        service_names: frontend_v2

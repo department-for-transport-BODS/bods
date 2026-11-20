@@ -1,4 +1,5 @@
 from django.http import HttpResponse
+from django.shortcuts import get_object_or_404
 from django.utils.timezone import now
 from django.views import View
 from django_tables2 import SingleTableView
@@ -103,7 +104,7 @@ class RequiresAttentionView(OrgUserViewMixin, SingleTableView):
 
 class ServiceCodeView(View):
     def get(self, *args, **kwargs):
-        self.org = Organisation.objects.get(id=kwargs["pk1"])
+        self.org = get_object_or_404(Organisation, id=kwargs["pk1"])
         return self.render_to_response()
 
     def render_to_response(self):
@@ -120,7 +121,7 @@ class ServiceCodeView(View):
 
 class ComplianceReportView(View):
     def get(self, *args, **kwargs):
-        self.org = Organisation.objects.get(id=kwargs["pk1"])
+        self.org = get_object_or_404(Organisation, id=kwargs["pk1"])
         return self.render_to_response()
 
     def render_to_response(self):

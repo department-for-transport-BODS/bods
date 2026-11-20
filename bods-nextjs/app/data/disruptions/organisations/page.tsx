@@ -1,0 +1,19 @@
+import { AlertsBrowserPage } from '@/components/data/browser';
+
+export default function DisruptionsPage() {
+  return (
+    <AlertsBrowserPage
+      title="Disruption data"
+      breadcrumbLabel="Disruption data"
+      description="Search for a specific Local Transport Authority"
+      placeholder="Enter Local Transport Authority name"
+      endpointPath="/api/app/disruption_organisations/"
+    />
+  );
+}
+
+export const metadata = {
+  title: 'Browse Disruption Data',
+  description: 'Search and browse disruption data.',
+};
+

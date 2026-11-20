@@ -1,0 +1,23 @@
+import { DatasetBrowserPage } from '@/components/data/browser';
+
+export default function AvlPage() {
+  return (
+    <DatasetBrowserPage
+        datasetType="AVL"
+      title="Location data"
+      breadcrumbLabel="Location Data"
+      description="Search for a specific operator or NOC"
+      placeholder="Search by NOC or Operator"
+      endpointPath="/api/browser/avl/"
+      typeLabel="Bus location data"
+      idLabel="Data feed ID:"
+      lastUpdatedLabel="Last automated update:"
+    />
+  );
+}
+
+export const metadata = {
+  title: 'Browse Location Data',
+  description: 'Search and browse bus location data feeds.',
+};
+
