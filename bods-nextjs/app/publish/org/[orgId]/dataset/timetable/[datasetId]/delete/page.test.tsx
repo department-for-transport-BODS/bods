@@ -42,7 +42,7 @@ describe('TimetableDeletePage back and cancel links', () => {
     expect(await screen.findByText(/delete data set "Timetable data set"/)).toBeInTheDocument();
     expect(screen.getByRole('heading', { name: 'Would you like to delete this data set?' })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'Back' })).toHaveAttribute('href', `${datasetUrl}/review`);
-    expect(screen.getByRole('button', { name: 'Cancel' })).toHaveAttribute('href', `${datasetUrl}/review`);
+    expect(screen.getByRole('link', { name: 'Cancel' })).toHaveAttribute('href', `${datasetUrl}/review`);
     expect(api.get).toHaveBeenCalledTimes(1);
   });
 
@@ -55,7 +55,7 @@ describe('TimetableDeletePage back and cancel links', () => {
     await waitFor(() => expect(api.get).toHaveBeenCalledWith(`${statusUrl}?revision=live`));
     await waitFor(() => {
       expect(screen.getByRole('link', { name: 'Back' })).toHaveAttribute('href', `${datasetUrl}/update/review`);
-      expect(screen.getByRole('button', { name: 'Cancel' })).toHaveAttribute('href', `${datasetUrl}/update/review`);
+      expect(screen.getByRole('link', { name: 'Cancel' })).toHaveAttribute('href', `${datasetUrl}/update/review`);
     });
   });
 
@@ -65,7 +65,7 @@ describe('TimetableDeletePage back and cancel links', () => {
 
     await waitFor(() => {
       expect(screen.getByRole('link', { name: 'Back' })).toHaveAttribute('href', datasetUrl);
-      expect(screen.getByRole('button', { name: 'Cancel' })).toHaveAttribute('href', datasetUrl);
+      expect(screen.getByRole('link', { name: 'Cancel' })).toHaveAttribute('href', datasetUrl);
     });
     expect(screen.getByRole('heading', { name: 'Would you like to delete this data set?' })).toBeInTheDocument();
     expect(screen.getByText(/delete data set "Timetable data set"/)).toBeInTheDocument();

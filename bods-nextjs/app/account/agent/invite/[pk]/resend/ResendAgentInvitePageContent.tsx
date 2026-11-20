@@ -72,15 +72,14 @@ function ResendAgentInvite() {
 
   return (
     <div className="govuk-width-container">
+      <Breadcrumbs
+        items={hostBreadcrumbs(
+          area,
+          { label: 'User management', href: manageUrl },
+          { label: 'Resend invite', current: true },
+        )}
+      />
       <div className="govuk-main-wrapper">
-        <Breadcrumbs
-          items={hostBreadcrumbs(
-            area,
-            { label: 'User management', href: manageUrl },
-            { label: 'Resend invite', current: true },
-          )}
-        />
-
         <div className="govuk-grid-row">
           <div className="govuk-grid-column-two-thirds">
             {isLoading && <p className="govuk-body">Loading...</p>}

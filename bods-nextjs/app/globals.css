@@ -8,6 +8,29 @@
  * identical to the Django version which uses govuk-frontend.
  */
 
+/*
+ * Django renders breadcrumbs and the publish stepper above `govuk-main-wrapper`, so the
+ * wrapper's top padding sits below them. Many Next.js pages render them as the wrapper's first child,
+ * which pushes them down by that padding. Cancel the padding above and restore it below.
+ * Wrappers that zero their own top padding are left alone. --main-wrapper-padding mirrors govuk-frontend's `.govuk-main-wrapper` (20px, 40px from tablet).
+ */
+.govuk-main-wrapper {
+  --main-wrapper-padding: 20px;
+}
+
+@media (min-width: 40.0625em) {
+  .govuk-main-wrapper {
+    --main-wrapper-padding: 40px;
+  }
+}
+
+.govuk-main-wrapper:not(.govuk-\!-padding-top-0) > .govuk-breadcrumbs:first-child {
+  margin-top: calc(10px - var(--main-wrapper-padding));
+  margin-bottom: 0;
+  /* Padding rather than margin so it adds to, not collapses with, the next element's top margin. */
+  padding-bottom: calc(10px + var(--main-wrapper-padding));
+}
+
 /* Reset any browser defaults that might conflict */
 *, *::before, *::after {
   box-sizing: border-box;
@@ -298,17 +321,13 @@ body {
 .app-data-browser__searchbox {
   width: 100%;
   display: flex;
-  margin-bottom: 0;
+  margin-bottom: 30px;
 }
 
 .app-data-browser__searchbox-input {
   width: 100%;
   height: 45px;
   z-index: 1;
-  border-right: 0;
-  padding: 0 10px;
-  font-family: "GDS Transport", arial, sans-serif;
-  font-size: 19px;
 }
 
 .app-data-browser__searchbox-button {
@@ -325,10 +344,6 @@ body {
 .app-data-browser__searchbox-button:focus {
   outline: 3px solid #ffdd00;
   outline-offset: 0;
-}
-
-.app-data-browser__search-description {
-  margin-bottom: 10px;
 }
 
 .app-data-browser__result-heading {
@@ -461,6 +476,12 @@ body {
   border: 0;
   border-bottom: 1px solid #b1b4b6;
   margin: 20px 0;
+}
+
+/* Django's normalize.css gives hr overflow: visible, so an empty section break's margins collapse through it. */
+.app-data-browser__empty-break {
+  overflow: visible;
+  box-sizing: content-box;
 }
 
 /* Dataset detail shared styles */
@@ -700,6 +721,10 @@ ul.dashed > li::before {
 
 .status-indicator--warning::before {
   background-color: var(--govuk-colour-yellow);
+}
+
+.status-indicator--unavailable::before {
+  background-color: #f47738;
 }
 
 .status-indicator--inactive::before {

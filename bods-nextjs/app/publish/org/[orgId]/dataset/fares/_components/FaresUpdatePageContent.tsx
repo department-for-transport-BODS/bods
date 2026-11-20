@@ -205,11 +205,10 @@ export function FaresUpdatePageContent({ mode }: Readonly<{ mode: FaresUpdateMod
 
   return (
     <div className="govuk-width-container">
+      <div className="govuk-breadcrumbs">
+        <PublishStepper steps={stepperSteps} />
+      </div>
       <div className="govuk-main-wrapper">
-        <div className="govuk-breadcrumbs">
-          <PublishStepper steps={stepperSteps} />
-        </div>
-
         <div className="govuk-grid-row">
           <div className="govuk-grid-column-two-thirds indented-text">
             {step === COMMENT_STEP ? (

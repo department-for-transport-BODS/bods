@@ -39,7 +39,7 @@ describe('FaresDeletePage back and cancel links', () => {
 
     expect(await screen.findByText(/delete data set "Fares data set"/)).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'Back' })).toHaveAttribute('href', `${datasetUrl}/review`);
-    expect(screen.getByRole('button', { name: 'Cancel' })).toHaveAttribute('href', `${datasetUrl}/review`);
+    expect(screen.getByRole('link', { name: 'Cancel' })).toHaveAttribute('href', `${datasetUrl}/review`);
     expect(api.get).toHaveBeenCalledTimes(1);
   });
 
@@ -51,7 +51,7 @@ describe('FaresDeletePage back and cancel links', () => {
     expect(screen.getByRole('link', { name: 'Back' })).toHaveAttribute('href', datasetUrl);
     await waitFor(() => expect(api.get).toHaveBeenCalledWith(`${statusUrl}?revision=live`));
     await waitFor(() =>
-      expect(screen.getByRole('button', { name: 'Cancel' })).toHaveAttribute('href', `${datasetUrl}/update/review`),
+      expect(screen.getByRole('link', { name: 'Cancel' })).toHaveAttribute('href', `${datasetUrl}/update/review`),
     );
   });
 
@@ -61,6 +61,6 @@ describe('FaresDeletePage back and cancel links', () => {
 
     expect(await screen.findByText(/cancel updating data set "Fares data set"/)).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'Back' })).toHaveAttribute('href', datasetUrl);
-    await waitFor(() => expect(screen.getByRole('button', { name: 'Cancel' })).toHaveAttribute('href', datasetUrl));
+    await waitFor(() => expect(screen.getByRole('link', { name: 'Cancel' })).toHaveAttribute('href', datasetUrl));
   });
 });

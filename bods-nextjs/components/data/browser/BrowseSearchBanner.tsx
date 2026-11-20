@@ -81,7 +81,7 @@ export function BrowseSearchBanner({
         <div className="govuk-grid-row govuk-!-margin-top-5">
           <div className="govuk-grid-column-one-half">
             <h1 className="govuk-heading-xl app-masthead__title">{title}</h1>
-            <p id="search-description" className="govuk-body app-data-browser__search-description">
+            <p id="search-description" className="govuk-body">
               {description}
             </p>
             <form onSubmit={handleSubmit} autoComplete={suggestions ? 'off' : undefined}>

@@ -138,16 +138,15 @@ function FaresDatasetDetailContent() {
 
   return (
     <div className="govuk-width-container">
+      <Breadcrumbs
+        items={hostBreadcrumbs(
+          'publish',
+          { label: 'Choose data type', href: publishAppPath(`/org/${orgId}/dataset`) },
+          { label: 'Fares Data Sets', href: publishAppPath(`/org/${orgId}/dataset/fares`) },
+          { label: data?.name || `Dataset ${datasetId}`, href: datasetUrl, truncateAt: 20 },
+        )}
+      />
       <div className="govuk-main-wrapper">
-        <Breadcrumbs
-          items={hostBreadcrumbs(
-            'publish',
-            { label: 'Choose data type', href: publishAppPath(`/org/${orgId}/dataset`) },
-            { label: 'Fares Data Sets', href: publishAppPath(`/org/${orgId}/dataset/fares`) },
-            { label: data?.name || `Dataset ${datasetId}`, href: datasetUrl, truncateAt: 20 },
-          )}
-        />
-
         {loading ? <p className="govuk-body">Loading dataset details...</p> : null}
 
         <ErrorSummary errors={error ? [error] : []} summaryId="dataset-detail-error-title" />
