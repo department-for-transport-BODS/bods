@@ -121,6 +121,11 @@ function redirectToSubdomain(
 export function proxy(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
 
+  // ALB probes use the target address rather than a BODS hostname.
+  if (pathname === '/healthcheck' || pathname === '/admin/healthcheck') {
+    return new NextResponse(null, { status: 200 });
+  }
+
   if (pathname.startsWith('/_next') || pathname.startsWith('/openapi/')) {
     return NextResponse.next();
   }
