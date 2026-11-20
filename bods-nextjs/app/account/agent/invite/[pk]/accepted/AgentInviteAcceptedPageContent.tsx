@@ -51,9 +51,8 @@ function AgentInviteAcceptedContent() {
 
   return (
     <div className="govuk-width-container">
+      <Breadcrumbs items={hostBreadcrumbs(area, { label: 'My account', href: '/account' })} />
       <div className="govuk-main-wrapper">
-        <Breadcrumbs items={hostBreadcrumbs(area, { label: 'My account', href: '/account' })} />
-
         <div className="govuk-grid-row">
           <div className="govuk-grid-column-two-thirds">
             {isLoading && <p className="govuk-body">Loading...</p>}

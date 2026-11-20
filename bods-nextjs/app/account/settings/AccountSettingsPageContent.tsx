@@ -82,11 +82,10 @@ function AccountSettingsContent() {
 
   return (
     <div className="govuk-width-container">
+      <Breadcrumbs
+        items={hostBreadcrumbs(area, { label: 'Account settings', current: true })}
+      />
       <div className="govuk-main-wrapper">
-        <Breadcrumbs
-          items={hostBreadcrumbs(area, { label: 'Account settings', current: true })}
-        />
-
         <div className="govuk-grid-row">
           <div className="govuk-grid-column-two-thirds">
             <h1 className="govuk-heading-xl">Account settings</h1>

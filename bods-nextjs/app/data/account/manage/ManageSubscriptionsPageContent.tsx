@@ -108,15 +108,14 @@ function ManageSubscriptions() {
 
   return (
     <div className="govuk-width-container">
+      <Breadcrumbs
+        items={[
+          { label: 'Bus Open Data Service', href: HOSTS.www },
+          { label: 'My account', href: '/account' },
+          { label: 'Manage subscriptions', current: true },
+        ]}
+      />
       <div className="govuk-main-wrapper">
-        <Breadcrumbs
-          items={[
-            { label: 'Bus Open Data Service', href: HOSTS.www },
-            { label: 'My account', href: '/account' },
-            { label: 'Manage subscriptions', current: true },
-          ]}
-        />
-
         <div className="govuk-grid-row">
           <div className="govuk-grid-column-two-thirds">
             <h1 className="govuk-heading-xl">Manage subscriptions</h1>

@@ -74,8 +74,8 @@ export function AvlDeletePageContent() {
               <p className="govuk-body-l">Loading...</p>
             ) : (
               <p className="govuk-body-l">
-                Please confirm that you would like to {contextAction}
-                {datasetName ? ` "${datasetName}"` : ''}. Any changes you have made so far will not be saved.
+                Please confirm that you would like to {contextAction} &quot;{datasetName}&quot; . Any changes you have
+                made so far will not be saved.
               </p>
             )}
 

@@ -145,16 +145,15 @@ function OrganisationProfileEditContent() {
 
   return (
     <div className="govuk-width-container">
+      <Breadcrumbs
+        items={[
+          { label: 'Bus Open Data Service', href: HOSTS.www },
+          { label: 'Publish Bus Open Data', href: HOSTS.publish },
+          { label: 'Organisation profile', href: profileUrl },
+          { label: 'Edit', current: true },
+        ]}
+      />
       <div className="govuk-main-wrapper">
-        <Breadcrumbs
-          items={[
-            { label: 'Bus Open Data Service', href: HOSTS.www },
-            { label: 'Publish Bus Open Data', href: HOSTS.publish },
-            { label: 'Organisation profile', href: profileUrl },
-            { label: 'Edit', current: true },
-          ]}
-        />
-
         <div className="govuk-grid-row">
           <div className="govuk-grid-column-two-thirds">
             <h1 className="govuk-heading-xl">Edit organisation profile</h1>

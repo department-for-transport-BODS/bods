@@ -92,7 +92,7 @@ function TimetableDeleteContent() {
               <button type="button" className="govuk-button" onClick={handleDelete} disabled={isDeleting}>
                 {isDeleting ? 'Deleting...' : 'Delete'}
               </button>
-              <Link role="button" className="govuk-button govuk-button--secondary" href={cancelUrl}>Cancel</Link>
+              <Link className="govuk-button govuk-button--secondary" href={cancelUrl}>Cancel</Link>
             </div>
           </div>
         </div>

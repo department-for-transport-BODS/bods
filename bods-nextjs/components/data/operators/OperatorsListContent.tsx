@@ -136,83 +136,85 @@ function OperatorsListInner() {
         suggestions={data?.operatorNames}
       />
 
-      <div className="govuk-width-container">
-        <div className="govuk-grid-row govuk-!-margin-top-5">
-          <div className="govuk-grid-column-two-thirds">
-            {error && <ErrorDisplay message={error} />}
-            {isLoading && !data ? (
-              <LoadingSpinner message="Loading operators" />
-            ) : (
-              data && (
-                <>
-                  <div className="app-data-browser__results-heading">
-                    {count > 1 && <span className="govuk-body">{count} results</span>}
-                    {count === 1 && <span className="govuk-body">1 result</span>}
-                    {count === 0 && (
-                      <h3 className="govuk-heading-m">Sorry, no results found{data.q ? ` for ${data.q}` : ''}</h3>
-                    )}
-                  </div>
-                  <FilterPillbox
-                    searchTerm={data.q}
-                    clearSearchHref={`${pathname}?ordering=${encodeURIComponent(data.ordering)}`}
-                    searchLabel="Containing"
-                    removeSectionBreakTopMargin
-                  />
-                  <div className="app-data-browser__sort-control govuk-form-group">
-                    <label className="govuk-label" htmlFor="ordering">
-                      Sort by
-                    </label>
-                    <select
-                      className="govuk-select"
-                      id="ordering"
-                      name="ordering"
-                      aria-label="Sort by"
-                      value={data.ordering}
-                      onChange={(event) => changeOrdering(event.target.value)}
-                    >
-                      {ORDERING_OPTIONS.map((option) => (
-                        <option key={option.value} value={option.value}>
-                          {option.label}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                  <div className="govuk-body">
-                    {data.results.length === 0 ? (
-                      <div>
-                        <hr className="govuk-section-break govuk-section-break--m" />
-                        <h4 className="govuk-heading-s">Having trouble finding what you want?</h4>
-                        <ul className="govuk-list govuk-list--bullet">
-                          <li>Check your spelling and try again</li>
-                        </ul>
-                      </div>
-                    ) : (
-                      data.results.map((operator, index) => (
-                        <div className="app-data-browser__result-item" key={operator.id}>
-                          {index > 0 && <hr className="app-data-browser__result-divider" />}
-                          <DataBrowserResultCard
-                            title={operator.name}
-                            href={operatorDetailUrl(operator.id)}
-                            keyValues={[{ key: 'Date registered:', value: formatOperatorDate(operator.created) }]}
-                          />
+      <div className="govuk-main-wrapper app-main-class">
+        <div className="govuk-width-container">
+          <div className="govuk-grid-row govuk-!-margin-top-5">
+            <div className="govuk-grid-column-two-thirds">
+              {error && <ErrorDisplay message={error} />}
+              {isLoading && !data ? (
+                <LoadingSpinner message="Loading operators" />
+              ) : (
+                data && (
+                  <>
+                    <div className="app-data-browser__results-heading">
+                      {count > 1 && <span className="govuk-body">{count} results</span>}
+                      {count === 1 && <span className="govuk-body">1 result</span>}
+                      {count === 0 && (
+                        <h3 className="govuk-heading-m">Sorry, no results found{data.q ? ` for ${data.q}` : ''}</h3>
+                      )}
+                    </div>
+                    <FilterPillbox
+                      searchTerm={data.q}
+                      clearSearchHref={`${pathname}?ordering=${encodeURIComponent(data.ordering)}`}
+                      searchLabel="Containing"
+                      removeSectionBreakTopMargin
+                    />
+                    <div className="app-data-browser__sort-control govuk-form-group">
+                      <label className="govuk-label" htmlFor="ordering">
+                        Sort by
+                      </label>
+                      <select
+                        className="govuk-select"
+                        id="ordering"
+                        name="ordering"
+                        aria-label="Sort by"
+                        value={data.ordering}
+                        onChange={(event) => changeOrdering(event.target.value)}
+                      >
+                        {ORDERING_OPTIONS.map((option) => (
+                          <option key={option.value} value={option.value}>
+                            {option.label}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                    <div className="govuk-body">
+                      {data.results.length === 0 ? (
+                        <div>
+                          <hr className="govuk-section-break govuk-section-break--m app-data-browser__empty-break" />
+                          <h4 className="govuk-heading-s">Having trouble finding what you want?</h4>
+                          <ul className="govuk-list govuk-list--bullet">
+                            <li>Check your spelling and try again</li>
+                          </ul>
                         </div>
-                      ))
+                      ) : (
+                        data.results.map((operator, index) => (
+                          <div className="app-data-browser__result-item" key={operator.id}>
+                            {index > 0 && <hr className="app-data-browser__result-divider" />}
+                            <DataBrowserResultCard
+                              title={operator.name}
+                              href={operatorDetailUrl(operator.id)}
+                              keyValues={[{ key: 'Date registered:', value: formatOperatorDate(operator.created) }]}
+                            />
+                          </div>
+                        ))
+                      )}
+                    </div>
+                    {count > 0 && (
+                      <>
+                        <hr className="govuk-section-break govuk-section-break--m govuk-section-break--visible" />
+                        <RangePagination
+                          currentPage={data.page}
+                          numPages={data.numPages}
+                          pageRange={data.pageRange}
+                          buildHref={buildPageHref}
+                        />
+                      </>
                     )}
-                  </div>
-                  {count > 0 && (
-                    <>
-                      <hr className="govuk-section-break govuk-section-break--m govuk-section-break--visible" />
-                      <RangePagination
-                        currentPage={data.page}
-                        numPages={data.numPages}
-                        pageRange={data.pageRange}
-                        buildHref={buildPageHref}
-                      />
-                    </>
-                  )}
-                </>
-              )
-            )}
+                  </>
+                )
+              )}
+            </div>
           </div>
         </div>
       </div>

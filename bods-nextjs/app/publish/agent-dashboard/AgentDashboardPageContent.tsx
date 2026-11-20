@@ -94,19 +94,18 @@ function AgentDashboard() {
 
   return (
     <div className="govuk-width-container">
+      <Breadcrumbs
+        items={[
+          { label: 'Bus Open Data Service', href: HOSTS.www },
+          { label: 'Publish Bus Open Data', href: HOSTS.publish },
+          {
+            label: 'Agent Dashboard',
+            href: publishAppPath('/agent-dashboard'),
+            current: true,
+          },
+        ]}
+      />
       <div className="govuk-main-wrapper">
-        <Breadcrumbs
-          items={[
-            { label: 'Bus Open Data Service', href: HOSTS.www },
-            { label: 'Publish Bus Open Data', href: HOSTS.publish },
-            {
-              label: 'Agent Dashboard',
-              href: publishAppPath('/agent-dashboard'),
-              current: true,
-            },
-          ]}
-        />
-
         <div className="govuk-grid-row">
           <div className="govuk-grid-column-three-quarters">
             <h1 className="govuk-heading-xl">Agent Dashboard</h1>

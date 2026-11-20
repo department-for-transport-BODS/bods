@@ -199,19 +199,18 @@ export function FaresCreatePageContent() {
 
   return (
     <div className="govuk-width-container">
-      <div className="govuk-main-wrapper">
+      <div className="govuk-breadcrumbs">
         <div className="govuk-breadcrumbs">
-          <div className="govuk-breadcrumbs">
-            <PublishStepper
-              steps={[
-                { label: '1. Describe data', state: step === 'description' ? 'selected' : 'previous' },
-                { label: '2. Provide data', state: step === 'upload' ? 'selected' : 'next' },
-                { label: '3. Review and publish', state: 'next' },
-              ]}
-            />
-          </div>
+          <PublishStepper
+            steps={[
+              { label: '1. Describe data', state: step === 'description' ? 'selected' : 'previous' },
+              { label: '2. Provide data', state: step === 'upload' ? 'selected' : 'next' },
+              { label: '3. Review and publish', state: 'next' },
+            ]}
+          />
         </div>
-
+      </div>
+      <div className="govuk-main-wrapper">
         <div className="govuk-grid-row">
           <div className="govuk-grid-column-two-thirds indented-text">
             <ErrorSummary errors={summaryErrors} tabIndex={-1} />
