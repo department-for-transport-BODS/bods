@@ -12,12 +12,13 @@
 import { useEffect, useState, Suspense } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
-import { HOSTS, wwwPath } from '@/config/client';
+import { wwwPath } from '@/config/client';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { Breadcrumbs } from '@/components/shared/Breadcrumbs';
 import { Pagination } from '@/components/shared/Pagination';
 import { api } from '@/lib/api-client';
 import { datasetDetailPath, datasetSubpagePath } from '@/lib/dataset-paths';
+import { hostBreadcrumbs } from '@/lib/host-breadcrumbs';
 
 type SubscriptionDatasetType = 'TIMETABLE' | 'AVL' | 'FARES';
 
@@ -109,17 +110,23 @@ function ManageSubscriptions() {
   return (
     <div className="govuk-width-container">
       <Breadcrumbs
-        items={[
-          { label: 'Bus Open Data Service', href: HOSTS.www },
+        items={hostBreadcrumbs(
+          'data',
           { label: 'My account', href: '/account' },
-          { label: 'Manage subscriptions', current: true },
-        ]}
+          { label: 'Manage subscriptions', href: '/account/manage' },
+        )}
       />
       <div className="govuk-main-wrapper">
         <div className="govuk-grid-row">
           <div className="govuk-grid-column-two-thirds">
             <h1 className="govuk-heading-xl">Manage subscriptions</h1>
+            {/* Django's users/base.html renders this empty subtitle paragraph, which adds the gap below the heading */}
+            <p className="govuk-body-l" />
+          </div>
+        </div>
 
+        <div className="govuk-grid-row govuk-!-margin-top-4">
+          <div className="govuk-grid-column-two-thirds">
             {isLoading && <p className="govuk-body">Loading...</p>}
             {!isLoading && error && <p className="govuk-body">{error}</p>}
 

@@ -10,7 +10,7 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
-import { HOSTS } from '@/config/client';
+import { hostBreadcrumbs } from '@/lib/host-breadcrumbs';
 import { OrgAdminRoute } from '@/components/auth/OrgAdminRoute';
 import { Breadcrumbs } from '@/components/shared/Breadcrumbs';
 import { api } from '@/lib/api-client';
@@ -79,12 +79,11 @@ function ManageUsers() {
   return (
     <div className="govuk-width-container">
       <Breadcrumbs
-        items={[
-          { label: 'Bus Open Data Service', href: HOSTS.www },
-          { label: 'Publish Bus Open Data', href: HOSTS.publish },
+        items={hostBreadcrumbs(
+          'publish',
           { label: 'My account', href: '/account' },
-          { label: 'User management', current: true },
-        ]}
+          { label: 'User management', href: `/account/manage/${orgId}` },
+        )}
       />
       <div className="govuk-main-wrapper">
         <div className="govuk-grid-row">

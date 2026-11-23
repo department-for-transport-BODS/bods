@@ -255,7 +255,6 @@ body {
   line-height: 1.14286;
   color: #ffffff;
   background: none;
-  position: relative;
 }
 
 @media (min-width: 40.0625em) {
@@ -266,22 +265,21 @@ body {
 }
 
 /*
- * Arrow mirrors Django's .bods-dropdown::after (govuk-shape-arrow, 10px base).
- * It lives on the toggle button, not the <li>, so it is part of the click target
- * and is centred on the text line.
+ * Arrow mirrors Django's .bods-dropdown::after: it sits on the <li>, outside the
+ * toggle, so the focus highlight covers only the icon and text.
  */
-.bods-dropdown .bods-dropdown__toggle::after {
+.bods-dropdown::after {
   content: "";
   display: inline-block;
   margin-left: 5px;
   border-style: solid;
   border-color: transparent;
-  border-width: 5px 5px 0;
+  border-width: 8px 5px 0;
   border-top-color: #ffffff;
 }
 
-.bods-dropdown.open .bods-dropdown__toggle::after {
-  border-width: 0 5px 5px;
+.bods-dropdown.open::after {
+  border-width: 0 5px 8px;
   border-top-color: transparent;
   border-bottom-color: #ffffff;
 }
@@ -290,22 +288,29 @@ body {
   border: 0;
   background: transparent;
   cursor: pointer;
-  color: inherit;
-  display: inline-flex;
-  align-items: center;
+  color: #ffffff;
   padding: 0;
   font: inherit;
 }
 
+/* GOV.UK focus state, as on Django's <a class="govuk-header__link">; the icon stays white as its PNG does. */
+.bods-dropdown .bods-dropdown__toggle:focus {
+  background-color: #ffdd00;
+  color: #0b0c0c;
+}
+
+.bods-dropdown .bods-dropdown__toggle:focus .account-menu__icon {
+  color: #ffffff;
+}
+
+/* As in Django, the menu is positioned where it falls, directly below the toggle. */
 .dropdown .dropdown-content {
   display: none;
   position: absolute;
-  right: 0;
-  top: 100%;
-  min-width: 220px;
+  min-width: 160px;
   background-color: #f3f2f1;
-  box-shadow: 0 8px 16px 0 rgba(11, 12, 12, 0.25);
-  z-index: 1000;
+  box-shadow: 0 8px 16px 0 #0b0c0c;
+  z-index: 1;
 }
 
 .dropdown .dropdown-content.open {
@@ -315,6 +320,12 @@ body {
 .dropdown .dropdown-content .govuk-link {
   display: block;
   padding: 12px 16px;
+  text-align: left;
+  text-decoration: none;
+}
+
+.dropdown .dropdown-content .govuk-link:hover {
+  background-color: #f3f2f1;
 }
 
 /* Data browser shared styles */
@@ -1682,4 +1693,25 @@ ul.licence-list a {
   right: 0;
   background: rgba(0, 0, 0, 0.7);
   z-index: 1;
+}
+
+.manage-users-table {
+  font-size: 19px;
+  margin-bottom: 60px;
+}
+
+.manage-users-table .manage-users-table__key {
+  font-weight: 700;
+}
+
+.manage-users-table .manage-users-table__value.left {
+  text-align: start;
+}
+
+.manage-users-table .manage-users-table__value.right {
+  text-align: end;
+}
+
+.manage-users-table .manage-users-table__change {
+  text-decoration-line: none;
 }
