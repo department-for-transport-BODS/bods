@@ -1,0 +1,10 @@
+/*
+ * Django's base CSS (normalize) gives `hr` `overflow: visible` and
+ * `box-sizing: content-box`. Without it the browser default (`overflow: hidden`)
+ * stops the margins of `.govuk-section-break` from collapsing through the
+ * empty `hr`, which adds ~50px around each section break.
+ */
+.page hr {
+  overflow: visible;
+  box-sizing: content-box;
+}

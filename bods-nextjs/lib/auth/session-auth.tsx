@@ -73,6 +73,7 @@ export function normaliseUser(user: Partial<User>): User {
     is_single_org_user: user.is_single_org_user,
     is_agent_user: user.is_agent_user,
     is_org_admin: user.is_org_admin,
+    session_cookie_age: user.session_cookie_age,
   };
 }
 

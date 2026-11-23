@@ -8,6 +8,7 @@ import { useApiResource } from '@/hooks/useApiResource';
 import { api } from '@/lib/api-client';
 import { publishAppPath } from '@/config/client';
 import { formatDateWithOrdinal } from '@/lib/utils/date';
+import styles from './TimetableUpdateSuccessContent.module.css';
 
 type TimetableUpdateSuccessData = {
   isPtiCompliant: boolean;
@@ -44,7 +45,10 @@ export function TimetableUpdateSuccessContent({ update = false }: Readonly<{ upd
   }
 
   return (
-    <div className="govuk-width-container">
+    <div className={`govuk-width-container ${styles.page}`}>
+      <div className="govuk-breadcrumbs">
+        <ol className="govuk-breadcrumbs__list" />
+      </div>
       <div className="govuk-main-wrapper">
         <div className="govuk-grid-row">
           <div className="govuk-grid-column-two-thirds">
@@ -64,8 +68,8 @@ export function TimetableUpdateSuccessContent({ update = false }: Readonly<{ upd
             <p className="govuk-body-m">
               You can view the data set on your{' '}
               <Link className="govuk-link" href={listUrl}>
-                data sets page.
-              </Link>{' '}
+                data sets page.{' '}
+              </Link>
               or by clicking the button below. The data will now be live for everyone else to see.
             </p>
             <hr className="govuk-section-break govuk-section-break--l govuk-section-break" />
