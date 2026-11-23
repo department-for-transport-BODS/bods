@@ -218,6 +218,33 @@ def test_serialize_user_includes_routing_fields_for_abods_user():
     assert payload["is_agent_user"] is False
 
 
+@override_settings(SESSION_COOKIE_AGE=900)
+def test_serialize_user_includes_session_cookie_age():
+    payload = _serialize_user(UserFactory())
+
+    assert payload["session_cookie_age"] == 900
+
+
+@pytest.mark.parametrize("host", [hosts.DATA_HOST, hosts.PUBLISH_HOST])
+@override_settings(SESSION_COOKIE_AGE=600)
+def test_current_user_api_returns_session_cookie_age(client_factory, host):
+    user = UserFactory()
+    client = client_factory(host=host)
+    client.force_login(user=user)
+
+    response = client.get("/api/auth/user/")
+
+    assert response.status_code == 200
+    assert response.json()["id"] == user.id
+    assert response.json()["session_cookie_age"] == 600
+
+
+def test_current_user_api_requires_authentication(client_factory):
+    client = client_factory(host=hosts.PUBLISH_HOST)
+
+    assert client.get("/api/auth/user/").status_code == 401
+
+
 PASSWORD_CHANGE_URL = "/api/auth/password/change/"
 
 

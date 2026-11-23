@@ -1,5 +1,8 @@
 import { render, screen, waitFor, within } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import '@testing-library/jest-dom';
+import { api } from '@/lib/api-client';
+import { navigateTo } from '@/lib/navigate-to';
 import { useDatasetReview } from '@/hooks/useDatasetReview';
 import { publishPath } from '@/config/client';
 import { getTimetablePublishRedirect, TimetableReviewPageContent } from './TimetableReviewPageContent';
@@ -15,6 +18,8 @@ jest.mock('@/hooks/useDatasetReview', () => ({
 jest.mock('@/lib/api-client', () => ({
   api: { get: jest.fn(), post: jest.fn() },
 }));
+
+jest.mock('@/lib/navigate-to', () => ({ navigateTo: jest.fn() }));
 
 jest.mock('@/components/data/MapboxRouteMap', () => ({
   MapboxRouteMap: () => <div data-testid="route-map" />,
@@ -209,18 +214,76 @@ describe('TimetableReviewPageContent', () => {
   });
 });
 
+describe('publishing from the review page', () => {
+  const readyStatus = {
+    ...successStatus,
+    dataQuality: {
+      status: 'SUCCESS',
+      score: 0.9,
+      ragLevel: 'green',
+      criticalCount: 0,
+      advisoryCount: 0,
+      reportId: 5,
+      hasCriticalIssues: false,
+      showUpdate: true,
+    },
+  };
+
+  const publish = async () => {
+    const user = userEvent.setup();
+    await user.click(screen.getByLabelText('I have reviewed the data quality report and wish to publish my data'));
+    await user.click(screen.getByRole('button', { name: 'Publish data' }));
+  };
+
+  beforeEach(() => jest.clearAllMocks());
+
+  it.each([
+    ['first publish (review/)', false, '/org/1/dataset/timetable/9/success/'],
+    ['update (update/review/)', true, '/org/1/dataset/timetable/9/update/success/'],
+  ])('posts to the publish API then opens the confirmation page for a %s', async (_name, isUpdate, successPath) => {
+    (api.post as jest.Mock).mockResolvedValue({ published: true, redirect: '/publish/org/1/dataset/timetable' });
+    renderContent(readyStatus, isUpdate);
+
+    await publish();
+
+    await waitFor(() => expect(navigateTo).toHaveBeenCalledTimes(1));
+    expect(api.post).toHaveBeenCalledTimes(1);
+    expect(api.post).toHaveBeenCalledWith('/api/publish/timetables/publish/1/9/');
+    expect(navigateTo).toHaveBeenCalledWith(publishPath(successPath));
+  });
+
+  it('does not publish until the consent box is ticked', async () => {
+    renderContent(readyStatus);
+
+    await userEvent.setup().click(screen.getByRole('button', { name: 'Publish data' }));
+
+    expect(api.post).not.toHaveBeenCalled();
+    expect(navigateTo).not.toHaveBeenCalled();
+  });
+
+  it('stays on the review page when publishing fails', async () => {
+    (api.post as jest.Mock).mockRejectedValue(new Error('Dataset is still processing'));
+    renderContent(readyStatus);
+
+    await publish();
+
+    await waitFor(() => expect(api.post).toHaveBeenCalledTimes(1));
+    expect(navigateTo).not.toHaveBeenCalled();
+  });
+});
+
 describe('getTimetablePublishRedirect', () => {
   const ids = { orgId: '1', datasetId: '9' };
 
   it('goes to update/success after publishing an update revision', () => {
     expect(getTimetablePublishRedirect({ ...ids, isUpdate: true })).toBe(
-      publishPath('/org/1/dataset/timetable/9/update/success'),
+      publishPath('/org/1/dataset/timetable/9/update/success/'),
     );
   });
 
   it('goes to success after a first publish, like Django PublishRevisionView', () => {
     expect(getTimetablePublishRedirect({ ...ids, isUpdate: false })).toBe(
-      publishPath('/org/1/dataset/timetable/9/success'),
+      publishPath('/org/1/dataset/timetable/9/success/'),
     );
   });
 });

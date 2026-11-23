@@ -1635,6 +1635,66 @@ ul.licence-list a {
   border-color: #d4351c;
 }
 
+/* Session timeout warning.
+   Mirrors transit_odp/frontend/assets/sass/components/modal/_timeout-warning.scss
+   (govuk-responsive-padding(6) = 20px, 30px from tablet; govuk-spacing(2/3/0) = 10/15/0px).
+   Django's stylesheet does not apply border-box sizing to the dialog, so neither do we. */
+.govuk-timeout-warning {
+  display: none;
+  box-sizing: content-box;
+  padding: 20px;
+  /* Setting width allows IE to center dialog vertically */
+  width: 100%;
+  max-width: 500px;
+  z-index: 2;
+  background-color: var(--govuk-colour-light-grey);
+  position: absolute;
+  right: 0;
+  left: 0;
+  margin: auto;
+  border-style: solid;
+  border-width: initial;
+  border-color: initial;
+}
+
+@media (min-width: 40.0625em) {
+  .govuk-timeout-warning {
+    padding: 30px;
+  }
+}
+
+.govuk-timeout-warning .govuk-button {
+  margin: 0 10px 15px 0;
+}
+
+@media (min-width: 40.0625em) {
+  .govuk-timeout-warning .govuk-button {
+    margin-bottom: 0;
+  }
+}
+
+/* The dialog takes focus when it opens (tabindex="-1"); it is not interactive itself. */
+.govuk-timeout-warning:focus {
+  outline: none;
+}
+
+.disable-scroll {
+  margin: 0;
+  height: 100vh;
+  overflow-y: hidden;
+}
+
+#dialog-overlay {
+  display: none;
+  position: fixed;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  background: rgba(0, 0, 0, 0.7);
+  z-index: 1;
+}
+
 .manage-users-table {
   font-size: 19px;
   margin-bottom: 60px;

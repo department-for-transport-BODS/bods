@@ -10,6 +10,7 @@ import { GDSProvider } from "@/components/gds/GDSProvider";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { PhaseBanner } from "@/components/layout/PhaseBanner";
+import { SessionTimeoutWarning } from "@/components/auth/SessionTimeoutWarning";
 import { hostnameFromHeaders } from "@/config/hosts";
 
 export const metadata: Metadata = {
@@ -46,6 +47,7 @@ export default async function RootLayout({
                 <div className="govuk-width-container">
                   <PhaseBanner />
                 </div>
+                <SessionTimeoutWarning />
                 {children}
               </main>
               <Footer />
