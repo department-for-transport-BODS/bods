@@ -16,6 +16,8 @@ export interface User {
   is_single_org_user?: boolean;
   is_agent_user?: boolean;
   is_org_admin?: boolean;
+  /** Seconds of inactivity before the Django session expires. */
+  session_cookie_age?: number;
 }
 
 export interface AuthToken {

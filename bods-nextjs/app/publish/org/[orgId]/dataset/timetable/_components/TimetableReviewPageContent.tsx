@@ -6,6 +6,7 @@ import { useParams } from 'next/navigation';
 import { FormEvent, ReactNode, useEffect, useRef, useState } from 'react';
 import { ErrorSummary } from '@/components/shared';
 import { api } from '@/lib/api-client';
+import { navigateTo } from '@/lib/navigate-to';
 import { PublishStepper } from '@/components/publish';
 import { publishAppPath, wwwPath } from '@/config/client';
 import { formatDateTime } from '@/lib/utils/date';
@@ -82,7 +83,7 @@ const DATA_QUALITY_CONSENT_LABEL = 'I have reviewed the data quality report and 
 
 /**
  * Where to go after publishing: Django's `timetables.views.review.PublishRevisionView` uses `success` and
- * UpdateRevisionPublishView uses `update/success`.
+ * UpdateRevisionPublishView uses `update/success`. Both keep Django's trailing slash.
  */
 export const getTimetablePublishRedirect = ({
   orgId,
@@ -92,7 +93,7 @@ export const getTimetablePublishRedirect = ({
   orgId: string;
   datasetId: string;
   isUpdate: boolean;
-}) => publishAppPath(`/org/${orgId}/dataset/timetable/${datasetId}/${isUpdate ? 'update/success' : 'success'}`);
+}) => publishAppPath(`/org/${orgId}/dataset/timetable/${datasetId}/${isUpdate ? 'update/success' : 'success'}/`);
 
 /** Django `publish/snippets/pti_panel/base.html`. */
 function PtiPanel({ children }: Readonly<{ children: ReactNode }>) {
@@ -302,7 +303,7 @@ export function TimetableReviewPageContent({ isUpdate = false }: Readonly<Timeta
 
     try {
       await api.post(`/api/publish/timetables/publish/${orgId}/${datasetId}/`);
-      globalThis.location.href = getTimetablePublishRedirect({ orgId, datasetId, isUpdate });
+      navigateTo(getTimetablePublishRedirect({ orgId, datasetId, isUpdate }));
     } catch (error) {
       const message = error instanceof Error ? error.message : 'An error occurred while publishing.';
       setErrorMessage(message);

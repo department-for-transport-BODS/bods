@@ -622,4 +622,7 @@ def _serialize_user(user):
         "is_single_org_user": user.is_single_org_user,
         "is_agent_user": user.is_agent_user,
         "is_org_admin": user.is_org_admin,
+        # Seconds of inactivity before the session expires; drives the Next.js
+        # session timeout warning (Django reads the same setting in its template).
+        "session_cookie_age": settings.SESSION_COOKIE_AGE,
     }
