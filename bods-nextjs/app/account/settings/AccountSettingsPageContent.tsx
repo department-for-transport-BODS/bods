@@ -83,14 +83,22 @@ function AccountSettingsContent() {
   return (
     <div className="govuk-width-container">
       <Breadcrumbs
-        items={hostBreadcrumbs(area, { label: 'Account settings', current: true })}
+        items={hostBreadcrumbs(
+          area,
+          { label: 'My account', href: '/account' },
+          { label: 'Account settings', href: '/account/settings' },
+        )}
       />
       <div className="govuk-main-wrapper">
         <div className="govuk-grid-row">
           <div className="govuk-grid-column-two-thirds">
             <h1 className="govuk-heading-xl">Account settings</h1>
             <p className="govuk-body-l">Account details</p>
+          </div>
+        </div>
 
+        <div className="govuk-grid-row govuk-!-margin-top-4">
+          <div className="govuk-grid-column-two-thirds">
             {isLoading && <p className="govuk-body">Loading...</p>}
             {!isLoading && error && <ErrorSummary errors={[error]} summaryId="account-settings-error-title" />}
 
@@ -98,6 +106,10 @@ function AccountSettingsContent() {
               <>
                 <table className="govuk-table manage-users-table">
                   <tbody className="govuk-table__body">
+                    <tr className="govuk-table__row">
+                      <td className="govuk-table__cell"></td>
+                      <td colSpan={2} className="govuk-table__cell"></td>
+                    </tr>
                     <tr className="govuk-table__row">
                       <td className="govuk-table__cell manage-users-table__key">User name</td>
                       <td colSpan={2} className="govuk-table__cell">{settings.username}</td>
@@ -108,9 +120,9 @@ function AccountSettingsContent() {
                     </tr>
                     <tr className="govuk-table__row">
                       <td className="govuk-table__cell manage-users-table__key">Password</td>
-                      <td className="govuk-table__cell">●●●●●●●●</td>
-                      <td className="govuk-table__cell">
-                        <Link className="govuk-link" href="/account/password/change">Change</Link>
+                      <td className="govuk-table__cell manage-users-table__value left">●●●●●●●●</td>
+                      <td className="govuk-table__cell manage-users-table__value right">
+                        <Link className="govuk-link manage-users-table__change" href="/account/password/change">Change</Link>
                       </td>
                     </tr>
                     <tr className="govuk-table__row">
@@ -119,69 +131,6 @@ function AccountSettingsContent() {
                     </tr>
                   </tbody>
                 </table>
-
-                {settings.showNotificationsForm && (
-                  <form onSubmit={handleSubmit}>
-                    <h3 className="govuk-heading-m">Notification settings</h3>
-                    <span className="govuk-hint">
-                      Choose what you would like to receive below. Allow up to 24 hours for any changes to take effect.
-                    </span>
-
-                    {saved && <p className="govuk-body">Your settings have been saved.</p>}
-
-                    <div className="govuk-checkboxes__item">
-                      <input
-                        className="govuk-checkboxes__input"
-                        id="notify_avl_unavailable"
-                        type="checkbox"
-                        checked={settings.notifyAvlUnavailable}
-                        onChange={(e) => setSettings({ ...settings, notifyAvlUnavailable: e.target.checked })}
-                      />
-                      <label className="govuk-label govuk-checkboxes__label" htmlFor="notify_avl_unavailable">
-                        No vehicle activity alert
-                      </label>
-                      <div className="govuk-hint govuk-checkboxes__hint">
-                        Receive an email if data is not received from your AVL feed for more than 5 minutes
-                      </div>
-                    </div>
-
-                    <div className="govuk-checkboxes__item">
-                      <input
-                        className="govuk-checkboxes__input"
-                        id="daily_compliance_check_alert"
-                        type="checkbox"
-                        checked={settings.dailyComplianceCheckAlert}
-                        onChange={(e) => setSettings({ ...settings, dailyComplianceCheckAlert: e.target.checked })}
-                      />
-                      <label className="govuk-label govuk-checkboxes__label" htmlFor="daily_compliance_check_alert">
-                        Daily SIRI-VM compliance check alert
-                      </label>
-                      <div className="govuk-hint govuk-checkboxes__hint">
-                        Receive an email every day once your AVL feed&apos;s compliance status has been re-calculated by
-                        BODS. This ensures you&apos;re up to date on your feed&apos;s compliance.
-                      </div>
-                    </div>
-
-                    {settings.showInvitationNotify && (
-                      <div className="govuk-checkboxes__item">
-                        <input
-                          className="govuk-checkboxes__input"
-                          id="notify_invitation_accepted"
-                          type="checkbox"
-                          checked={settings.notifyInvitationAccepted}
-                          onChange={(e) => setSettings({ ...settings, notifyInvitationAccepted: e.target.checked })}
-                        />
-                        <label className="govuk-label govuk-checkboxes__label" htmlFor="notify_invitation_accepted">
-                          Team members accept invitation
-                        </label>
-                      </div>
-                    )}
-
-                    <button type="submit" className="govuk-button govuk-!-margin-top-4" disabled={isSaving}>
-                      {isSaving ? 'Saving...' : 'Save'}
-                    </button>
-                  </form>
-                )}
               </>
             )}
           </div>
@@ -195,6 +144,69 @@ function AccountSettingsContent() {
             </ul>
           </div>
         </div>
+
+        {!isLoading && settings?.showNotificationsForm && (
+          <form onSubmit={handleSubmit}>
+            <h3 className="govuk-heading-m">Notification settings</h3>
+            <span className="govuk-hint">
+              Choose what you would like to receive below. Allow up to 24 hours for any changes to take effect.
+            </span>
+
+            {saved && <p className="govuk-body">Your settings have been saved.</p>}
+
+            <div className="govuk-checkboxes__item">
+              <input
+                className="govuk-checkboxes__input"
+                id="notify_avl_unavailable"
+                type="checkbox"
+                checked={settings.notifyAvlUnavailable}
+                onChange={(e) => setSettings({ ...settings, notifyAvlUnavailable: e.target.checked })}
+              />
+              <label className="govuk-label govuk-checkboxes__label" htmlFor="notify_avl_unavailable">
+                No vehicle activity alert
+              </label>
+              <div className="govuk-hint govuk-checkboxes__hint">
+                Receive an email if data is not received from your AVL feed for more than 5 minutes
+              </div>
+            </div>
+
+            <div className="govuk-checkboxes__item">
+              <input
+                className="govuk-checkboxes__input"
+                id="daily_compliance_check_alert"
+                type="checkbox"
+                checked={settings.dailyComplianceCheckAlert}
+                onChange={(e) => setSettings({ ...settings, dailyComplianceCheckAlert: e.target.checked })}
+              />
+              <label className="govuk-label govuk-checkboxes__label" htmlFor="daily_compliance_check_alert">
+                Daily SIRI-VM compliance check alert
+              </label>
+              <div className="govuk-hint govuk-checkboxes__hint">
+                Receive an email every day once your AVL feed&apos;s compliance status has been re-calculated by
+                BODS. This ensures you&apos;re up to date on your feed&apos;s compliance.
+              </div>
+            </div>
+
+            {settings.showInvitationNotify && (
+              <div className="govuk-checkboxes__item">
+                <input
+                  className="govuk-checkboxes__input"
+                  id="notify_invitation_accepted"
+                  type="checkbox"
+                  checked={settings.notifyInvitationAccepted}
+                  onChange={(e) => setSettings({ ...settings, notifyInvitationAccepted: e.target.checked })}
+                />
+                <label className="govuk-label govuk-checkboxes__label" htmlFor="notify_invitation_accepted">
+                  Team members accept invitation
+                </label>
+              </div>
+            )}
+
+            <button type="submit" className="govuk-button govuk-!-margin-top-4" disabled={isSaving}>
+              {isSaving ? 'Saving...' : 'Save'}
+            </button>
+          </form>
+        )}
       </div>
     </div>
   );

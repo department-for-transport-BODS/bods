@@ -6,9 +6,9 @@ export function AccountIcon(props: SVGProps<SVGSVGElement>) {
       aria-hidden="true"
       focusable="false"
       xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 24 24"
-      width="20"
-      height="20"
+      viewBox="2.4 2.4 19.2 19.2"
+      width="21"
+      height="21"
       fill="currentColor"
       {...props}
     >

@@ -117,9 +117,9 @@ export function FeedbackForm({ pageUrl }: FeedbackFormProps) {
           <label className="govuk-label" htmlFor="comment">
             Comment
           </label>
-          <div id="comment-hint" className="govuk-hint">
+          <span id="comment-hint" className="govuk-hint">
             Do not include any personal or financial information such as your National Insurance or credit card numbers.
-          </div>
+          </span>
           {fieldErrors.comment && (
             <p className="govuk-error-message" id="comment-error">
               <span className="govuk-visually-hidden">Error:</span> {fieldErrors.comment}
@@ -142,7 +142,7 @@ export function FeedbackForm({ pageUrl }: FeedbackFormProps) {
         </div>
         <span className="govuk-hint">
           You have {MAX_COMMENT_LENGTH - comment.length} characters remaining
-        </span>
+        </span>{' '}
 
         <input type="hidden" name="page_url" value={pageUrl} readOnly />
         <button className="govuk-button" type="submit" disabled={isSubmitting}>
