@@ -2,6 +2,7 @@ from unittest.mock import patch
 
 import pytest
 from django_hosts import reverse
+from waffle.testutils import override_flag
 
 from config.hosts import DATA_HOST
 from transit_odp.browse.tests.test_avls import (
@@ -157,6 +158,7 @@ class TestUserFaresFeedbackView(TestUserAVLFeedbackView):
 
 
 class TestFaresArchiveDownloads:
+    @override_flag("is_direct_s3_url_active", active=True)
     def test_download_redirects_to_signed_url(self, client_factory):
         archive = BulkDataArchiveFactory(dataset_type=FaresType)
         client = client_factory(host=DATA_HOST)
@@ -171,3 +173,17 @@ class TestFaresArchiveDownloads:
         assert response.status_code == 302
         assert response["Location"] == signed_url
         mocked_generate_signed_url.assert_called_once_with(f"fares/{archive.data.name}")
+
+    @override_flag("is_direct_s3_url_active", active=False)
+    def test_download_streams_archive_when_direct_s3_is_disabled(self, client_factory):
+        BulkDataArchiveFactory(
+            dataset_type=FaresType,
+            data__data=b"fare archive",
+            data__filename="fares.zip",
+        )
+        client = client_factory(host=DATA_HOST)
+
+        response = client.get(reverse("downloads-fares-bulk", host=DATA_HOST))
+
+        assert response.status_code == 200
+        assert b"".join(response.streaming_content) == b"fare archive"
