@@ -18,8 +18,8 @@ from transit_odp.avl.constants import (
 )
 from transit_odp.avl.models import CAVLDataArchive, PostPublishingCheckReport
 from transit_odp.avl.proxies import AVLDataset
-from transit_odp.browse.filters import AVLSearchFilter
 from transit_odp.browse.cfn import generate_signed_url
+from transit_odp.browse.filters import AVLSearchFilter
 from transit_odp.browse.tables import DatasetPaginatorTable
 from transit_odp.browse.views.base_views import BaseSearchView, ChangeLogView
 from transit_odp.browse.views.timetable_views import (
@@ -174,15 +174,12 @@ class DownloadCAVLDataArchiveView(DownloadView):
         return archive
 
     def get_download_file(self):
-        return generate_signed_url(f"avl/{self.object.data.name}")
-
-    def render_to_response(self, **response_kwargs):
-        return redirect(self.get_download_file())
+        return self.object.data
 
     def render_to_response(self, **response_kwargs):
         is_direct_s3_url_active = flag_is_active("", "is_direct_s3_url_active")
         if is_direct_s3_url_active:
-            return redirect(self.get_download_file())
+            return redirect(generate_signed_url(f"avl/{self.object.data.name}"))
         return super().render_to_response(**response_kwargs)
 
 
