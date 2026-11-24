@@ -1,8 +1,8 @@
-ARG BASE_IMAGE=python:3.11-slim
+ARG BASE_IMAGE=python:3.10-slim
 FROM ${BASE_IMAGE}
 
 ENV PYTHONUNBUFFERED=1 \
-    POETRY_VERSION=2.5.1
+    POETRY_VERSION=1.7.1
 ENV PATH=$PATH:/app/node_modules/.bin
 WORKDIR /app
 
@@ -36,4 +36,4 @@ RUN apt-get update && apt-get install -y \
 COPY ./pyproject.toml ./poetry.lock ./
 RUN pip install poetry==$POETRY_VERSION \
     && poetry config virtualenvs.create false \
-    && poetry install --only main --no-root
+    && poetry install --no-dev --no-root

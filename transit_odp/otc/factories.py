@@ -10,8 +10,8 @@ from faker import Faker
 from faker.providers import BaseProvider
 
 from transit_odp.otc.constants import (
-    API_TYPE_EP,
     API_TYPE_WECA,
+    API_TYPE_EP,
     LicenceDescription,
     LicenceStatuses,
     SubsidiesDescription,
@@ -24,6 +24,10 @@ from transit_odp.otc.models import Operator as OperatorModel
 from transit_odp.otc.models import Service as ServiceModel
 from transit_odp.otc.models import UILta
 
+TODAY = datetime.date.today()
+NOW = timezone.now()
+PAST = TODAY - datetime.timedelta(weeks=100)
+RECENT = NOW - datetime.timedelta(days=2)
 DATE_STRING = "%d/%m/%Y"
 DATETIME_STRING = "%d/%m/%Y %H:%M:%S"
 faker = Faker()
@@ -38,24 +42,16 @@ class CustomCompanyNameProvider(BaseProvider):
 factory.Faker.add_provider(CustomCompanyNameProvider)
 
 
-def fuzzy_date(_=None):
-    past = datetime.date.today() - datetime.timedelta(weeks=100)
-    return factory.fuzzy.FuzzyDate(start_date=past).fuzz()
-
-
 def fuzzy_date_as_text(_):
-    return fuzzy_date().strftime(DATE_STRING)
-
-
-def fuzzy_datetime(_=None):
-    now = timezone.now()
-    return factory.fuzzy.FuzzyDateTime(
-        start_dt=now - datetime.timedelta(days=2), end_dt=now
-    ).fuzz()
+    return factory.fuzzy.FuzzyDate(start_date=PAST).fuzz().strftime(DATE_STRING)
 
 
 def fuzzy_datetime_as_text(_):
-    return fuzzy_datetime().strftime(DATETIME_STRING)
+    return (
+        factory.fuzzy.FuzzyDateTime(start_dt=RECENT, end_dt=NOW)
+        .fuzz()
+        .strftime(DATETIME_STRING)
+    )
 
 
 class RegistrationFactory(factory.Factory):
@@ -104,8 +100,8 @@ class LicenceFactory(factory.Factory):
 
     number = factory.Sequence(lambda n: f"PD0000{n:03}")
     status = factory.fuzzy.FuzzyChoice(LicenceStatuses.values)
-    granted_date = factory.LazyFunction(fuzzy_date)
-    expiry_date = factory.LazyFunction(fuzzy_date)
+    granted_date = factory.fuzzy.FuzzyDate(start_date=PAST)
+    expiry_date = factory.fuzzy.FuzzyDate(start_date=PAST)
 
 
 class OperatorFactory(factory.Factory):
@@ -134,9 +130,9 @@ class ServiceFactory(factory.Factory):
     start_point = factory.Faker("street_name")
     finish_point = factory.Faker("street_name")
     via = factory.Faker("sentence")
-    effective_date = factory.LazyFunction(fuzzy_date)
-    received_date = factory.LazyFunction(fuzzy_date)
-    end_date = factory.LazyFunction(fuzzy_date)
+    effective_date = factory.fuzzy.FuzzyDate(start_date=PAST)
+    received_date = factory.fuzzy.FuzzyDate(start_date=PAST)
+    end_date = factory.fuzzy.FuzzyDate(start_date=PAST)
     service_type_other_details = factory.Faker("sentence")
     registration_code = factory.fuzzy.FuzzyInteger(high=20, low=1)
     description = factory.fuzzy.FuzzyChoice(LicenceDescription.values)
@@ -146,7 +142,7 @@ class ServiceFactory(factory.Factory):
     short_notice = factory.fuzzy.FuzzyChoice([True, False])
     subsidies_description = factory.fuzzy.FuzzyChoice(SubsidiesDescription.values)
     subsidies_details = factory.Faker("sentence")
-    last_modified = factory.LazyFunction(fuzzy_datetime)
+    last_modified = factory.fuzzy.FuzzyDateTime(start_dt=RECENT)
 
 
 class CustomRegistrationNumberFaker(factory.Faker):
@@ -169,7 +165,7 @@ class WecaServiceFactory(DjangoModelFactory, factory.Factory):
     start_point = factory.Faker("street_name")
     finish_point = factory.Faker("street_name")
     via = factory.Faker("sentence")
-    effective_date = factory.LazyFunction(fuzzy_date)
+    effective_date = factory.fuzzy.FuzzyDate(start_date=PAST)
     api_type = API_TYPE_WECA
     atco_code = f"{factory.fuzzy.FuzzyInteger(high=999, low=100)}"
 
@@ -184,7 +180,7 @@ class EPServiceFactory(DjangoModelFactory, factory.Factory):
     start_point = factory.Faker("street_name")
     finish_point = factory.Faker("street_name")
     via = factory.Faker("sentence")
-    effective_date = factory.LazyFunction(fuzzy_date)
+    effective_date = factory.fuzzy.FuzzyDate(start_date=PAST)
     api_type = API_TYPE_EP
     atco_code = f"{factory.fuzzy.FuzzyInteger(high=999, low=100)}"
 

@@ -3,7 +3,6 @@ from unittest.mock import patch
 import pytest
 from django.contrib.auth.models import AnonymousUser
 from django_hosts import reverse
-from waffle.testutils import override_flag
 
 from config.hosts import DATA_HOST
 from transit_odp.avl.factories import CAVLDataArchiveFactory
@@ -17,7 +16,6 @@ pytestmark = pytest.mark.django_db(transaction=True)
 SIGNED_URL = "https://example.test/signed-url"
 
 
-@override_flag("is_direct_s3_url_active", active=True)
 def test_resource_counter_works_once(client_factory, user_factory):
     BulkDataArchiveFactory()
     consumer = user_factory()
@@ -39,7 +37,6 @@ def test_resource_counter_works_once(client_factory, user_factory):
     assert resource_counter.counter == 1
 
 
-@override_flag("is_direct_s3_url_active", active=True)
 def test_resource_counter_works_twice(client_factory, user_factory):
     BulkDataArchiveFactory()
     consumer = user_factory()
@@ -59,7 +56,6 @@ def test_resource_counter_works_twice(client_factory, user_factory):
     assert resource_counter.counter == 2
 
 
-@override_flag("is_direct_s3_url_active", active=True)
 def test_resource_counter_user_not_logged(client_factory):
     BulkDataArchiveFactory()
     client = client_factory(host=DATA_HOST)
@@ -78,7 +74,6 @@ def test_resource_counter_user_not_logged(client_factory):
     assert resource_counter.counter == 1
 
 
-@override_flag("is_direct_s3_url_active", active=True)
 def test_multiple_resource_counters(client_factory, user_factory):
     """
     Progressively hit multiple resource counter endpoints

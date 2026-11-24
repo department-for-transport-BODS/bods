@@ -1,8 +1,8 @@
-ARG BASE_IMAGE=python:3.11-slim
+ARG BASE_IMAGE=python:3.10-slim
 FROM ${BASE_IMAGE}
 
 ENV PYTHONUNBUFFERED=1 \
-    POETRY_VERSION=2.5.1
+    POETRY_VERSION=1.8.3
 
 ENV PATH=$PATH:/app/node_modules/.bin
 WORKDIR /app

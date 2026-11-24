@@ -3,11 +3,11 @@ from unittest.mock import patch
 import pytest
 from django_hosts import reverse
 from freezegun import freeze_time
-from waffle.testutils import override_flag
 
 from config.hosts import DATA_HOST
 from transit_odp.browse.tests.test_avls import TestUserAVLFeedbackView
 from transit_odp.browse.tests.test_fares import TestFaresSearchView
+from transit_odp.pipelines.factories import BulkDataArchiveFactory
 from transit_odp.organisation.constants import (
     FeedStatus,
     TimetableType,
@@ -17,7 +17,6 @@ from transit_odp.organisation.factories import (
     DatasetRevisionFactory,
     OrganisationFactory,
 )
-from transit_odp.pipelines.factories import BulkDataArchiveFactory
 from transit_odp.users.constants import OrgAdminType, SiteAdminType
 from transit_odp.users.factories import UserFactory
 
@@ -158,7 +157,6 @@ class TestTimetableArchiveDownloads:
 class TestTimetableRegionArchiveDownloads:
     region_code = TravelineRegions.NORTH_EAST.value
 
-    @override_flag("is_direct_s3_url_active", active=True)
     def test_download_redirects_to_signed_url(self, client_factory):
         archive = BulkDataArchiveFactory(
             dataset_type=TimetableType,

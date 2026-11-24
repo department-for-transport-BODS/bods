@@ -697,7 +697,6 @@ def test_csv_output():
         registration_number=service_codes[4],
         service_number=service_numbers[4],
         effective_date=datetime.datetime(2022, 6, 24),
-        end_date=None,
         variation_number=55,
         start_point="start point service 5",
         finish_point="finish point service 5",

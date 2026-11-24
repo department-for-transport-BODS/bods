@@ -175,7 +175,7 @@ test-merge-request:
 lint:
   extends: .merge-request-task
   stage: test
-  image: python:3.11
+  image: python:3.9.7
   before_script:
     - *logging
     - pip install black==$BLACK_VERSION

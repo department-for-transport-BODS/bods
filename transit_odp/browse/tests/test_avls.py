@@ -4,7 +4,6 @@ from unittest.mock import patch
 import pytest
 from django.conf import settings
 from django_hosts import reverse
-from waffle.testutils import override_flag
 
 from config.hosts import DATA_HOST
 from transit_odp.avl.factories import CAVLDataArchiveFactory, GTFSRTDataArchiveFactory
@@ -375,7 +374,6 @@ class TestAVLArchiveDownloads:
             ),
         ],
     )
-    @override_flag("is_direct_s3_url_active", active=True)
     def test_download_redirects_to_signed_url(
         self, client_factory, factory, factory_kwargs, view_name
     ):

@@ -119,7 +119,7 @@ test-dev:
 lint:
   extends: .merge-request-task
   stage: test
-  image: python:3.11
+  image: python:3.9
   before_script:
     - *logging
     - pip install --pre black

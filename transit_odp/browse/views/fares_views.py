@@ -72,12 +72,15 @@ class DownloadFaresBulkDataArchiveView(ResourceCounterMixin, DownloadView):
             )
 
     def get_download_file(self):
-        return self.object.data
+        return generate_signed_url(f"fares/{self.object.data.name}")
+
+    def render_to_response(self, **response_kwargs):
+        return redirect(self.get_download_file())
 
     def render_to_response(self, **response_kwargs):
         is_direct_s3_url_active = flag_is_active("", "is_direct_s3_url_active")
         if is_direct_s3_url_active:
-            return redirect(generate_signed_url(f"fares/{self.object.data.name}"))
+            return redirect(self.get_download_file())
         return super().render_to_response(**response_kwargs)
 
 
