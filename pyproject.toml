@@ -11,7 +11,7 @@ authors = [
 license = "MIT"
 
 [tool.poetry.dependencies]
-python = "^3.11"
+python = "^3.10"
 
 argon2-cffi = "~=23.1.0"
 celery = "~=5.3.6"
