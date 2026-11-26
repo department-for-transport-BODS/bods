@@ -56,8 +56,8 @@ function FaresDeletePageContent() {
     : 'Would you like to delete this data set?';
 
   const bodyText = hasLiveRevision
-    ? `Please confirm that you would like to cancel updating data set "${datasetName}" .`
-    : `Please confirm that you would like to delete data set "${datasetName}" .`;
+    ? `Please confirm that you would like to cancel updating data set "${datasetName}" . Any changes you have made so far will not be saved.`
+    : `Please confirm that you would like to delete data set "${datasetName}" . Any changes you have made so far will not be saved.`;
 
   const handleDelete = async () => {
     setErrorMessage('');
@@ -90,8 +90,6 @@ function FaresDeletePageContent() {
             <h1 className="govuk-heading-xl">{heading}</h1>
             <p className="govuk-body-l">
               {bodyText}
-              <br />
-              Any changes you have made so far will not be saved.
             </p>
 
             <ErrorSummary errors={errorMessage ? [errorMessage] : []} summaryId="delete-error-title" />
