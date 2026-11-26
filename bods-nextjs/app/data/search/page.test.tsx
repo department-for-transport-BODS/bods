@@ -1,4 +1,5 @@
 import { fireEvent, render, screen, within } from '@testing-library/react';
+import { TRANSXCHANGE_VERSION } from '@/config/client';
 import DataSearchSelectPage from './page';
 
 const PTI_URL = 'https://example.test/pti.pdf';
@@ -23,7 +24,7 @@ describe('DataSearchSelectPage', () => {
   it('shows the Django TXC profile text', async () => {
     const { container } = await renderPage();
 
-    expect(container).toHaveTextContent('Format : TXC 2.4 PTI 1.1.A');
+    expect(container).toHaveTextContent(`Format : TXC ${TRANSXCHANGE_VERSION} PTI 1.1.A`);
   });
 
   it('renders a help icon next to each format, matching Django', async () => {
