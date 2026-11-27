@@ -11,6 +11,7 @@ import { PublishStepper } from '@/components/publish';
 import { publishAppPath, wwwPath } from '@/config/client';
 import { formatDateTime } from '@/lib/utils/date';
 import { useDatasetReview } from '@/hooks/useDatasetReview';
+import { useDocumentTitle } from '@/hooks/useDocumentTitle';
 import { TimetableHelpAside } from './TimetableHelpAside';
 import { MapboxRouteMap } from '@/components/data/MapboxRouteMap';
 
@@ -317,10 +318,7 @@ export function TimetableReviewPageContent({ isUpdate = false }: Readonly<Timeta
     : statusData?.error || errorMessage
       ? 'Error: Review and publish'
       : 'Review and publish';
-
-  useEffect(() => {
-    document.title = pageTitle;
-  }, [pageTitle]);
+  useDocumentTitle(pageTitle);
   const hasValidationIssues = statusData?.validationState === 'passed-with-issues';
   const dataQuality = statusData?.dataQuality;
   const noValidFile = statusData?.error === 'NO_VALID_FILE_TO_PROCESS';
