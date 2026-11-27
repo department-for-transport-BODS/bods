@@ -16,7 +16,7 @@ RUN yarn install && yarn build
 FROM ${BASE_IMAGE}
 
 ENV PYTHONUNBUFFERED=1 \
-    POETRY_VERSION=1.7.1
+    POETRY_VERSION=2.5.1
 ENV PATH=$PATH:/app/node_modules/.bin
 WORKDIR /app
 
@@ -62,7 +62,7 @@ COPY --from=0 /app/transit_odp/frontend/static /app/transit_odp/frontend/static
 COPY ./pyproject.toml ./poetry.lock ./
 RUN pip install poetry==$POETRY_VERSION \
     && poetry config virtualenvs.create false \
-    && poetry install --no-dev
+    && poetry install --only main --no-root
 
 # Create non-privileged user
 RUN <<EOF

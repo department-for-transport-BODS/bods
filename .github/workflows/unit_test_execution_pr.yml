@@ -281,7 +281,7 @@ jobs:
         id: add_dependencies
         run: |
           poetry config virtualenvs.create false
-          poetry install
+          poetry install --no-root
 
         # TODO: Currently passing on failed tests - remove || [ $? = 1 ] when tests are passing
       - name: "Run Tests"

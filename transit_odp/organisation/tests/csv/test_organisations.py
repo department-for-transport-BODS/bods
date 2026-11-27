@@ -141,6 +141,8 @@ def test_df_organisations():
             licence_number=service.licence.number,
             service_code=service.registration_number.replace("/", ":"),
             revision=timetable_revision,
+            operating_period_start_date=before,
+            operating_period_end_date=before,
         )
         if idx < published_exempted_service_codes_count:
             org_licence = next(lic for lic in licences if lic.number == licence.number)
