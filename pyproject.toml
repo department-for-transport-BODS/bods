@@ -35,7 +35,7 @@ django-fsm = "~=2.8.1"
 django-hosts = "~=6.0"
 django-invitations = "~=2.1.0"
 django-model-utils = "~=4.3.1"
-django-redis = "~=5.4.0"
+django-redis = ">=5.4,<6.1"
 django-rest-swagger = "~=2.2.0"
 django-storages = { extras = ["boto3"], version = "~=1.14.2" }
 django-tables2 = "~=2.7.0"
