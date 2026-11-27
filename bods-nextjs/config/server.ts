@@ -1,0 +1,36 @@
+import "server-only";
+import { buildBodsHosts, getBodsBaseDomain } from './hosts';
+
+const djangoInternalOrigin = process.env.DJANGO_INTERNAL_ORIGIN || 'http://localhost:8000';
+const bodsBaseDomain = getBodsBaseDomain();
+const djangoHostDomain = process.env.DJANGO_HOST_DOMAIN || bodsBaseDomain;
+const mapboxToken = process.env.MAPBOX_KEY || '';
+const supportPhone = process.env.SUPPORT_PHONE || '0808 172 4134';
+const supportEmail = process.env.SUPPORT_EMAIL || 'support@busopendataservice.atlassian.net';
+const ptiPdfUrl = process.env.PTI_PDF_URL || 'https://pti.org.uk/system/files/files/TransXChange_UK_PTI_Profile_v1.1.A.pdf';
+const avlIpAllowList = process.env.AVL_IP_ADDRESS_LIST || '';
+
+function djangoPublicPort(): string {
+  if (bodsBaseDomain !== 'localhost') {
+    return '';
+  }
+
+  try {
+    return new URL(djangoInternalOrigin).port || '8000';
+  } catch {
+    return '8000';
+  }
+}
+
+export const DJANGO_HOSTS = buildBodsHosts(djangoHostDomain, djangoPublicPort());
+
+// ECS runtime configuration for server imports only; pass browser-safe values to clients explicitly.
+// Note : Whilst the Mapbox, and support details are displayed to the client they are not available at build time, and hence brought in as server values.
+export const serverConfig = {
+  djangoInternalOrigin,
+  mapboxToken,
+  supportPhone,
+  supportEmail,
+  ptiPdfUrl,
+  avlIpAllowList,
+} as const;

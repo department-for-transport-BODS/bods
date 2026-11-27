@@ -41,6 +41,7 @@ handler500 = "transit_odp.common.utils.custom_error_handlers.server_error"
 
 urlpatterns = [
     path("", view=PublishHomeView.as_view(), name="home"),
+    path("api/", include("config.urls.nextjs_api")),
     path(
         "guide-me/",
         include(

@@ -1,0 +1,10 @@
+/* Django `.govuk-button-back-link`: a wizard submit button styled as `.govuk-back-link`. */
+.backButton {
+  background: none;
+  box-shadow: none;
+  border: none;
+  border-bottom: 1px solid #0b0c0c;
+  border-radius: 0;
+  padding: 0 0 0 14px;
+  cursor: pointer;
+}

@@ -123,6 +123,7 @@ def task_run_antivirus_check(task_id: int, adapter):
     task = get_etl_task_or_pipeline_exception(task_id)
     revision = task.revision
     file_ = revision.upload_file
+
     try:
         scanner = FileScanner(settings.CLAMAV_HOST, settings.CLAMAV_PORT)
         adapter.info("Virus scanning fares file.")

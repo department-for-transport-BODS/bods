@@ -5,6 +5,7 @@ from transit_odp.timetables.etl import TransXChangePipeline
 
 def run(revision: DatasetRevision, task: DatasetETLTaskResult) -> DatasetRevision:
     try:
+        task.update_progress(10)
         pipeline = TransXChangePipeline(revision)
         extracted = pipeline.extract()
         task.update_progress(70)

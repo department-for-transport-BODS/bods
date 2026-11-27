@@ -1,3 +1,5 @@
+from django.http import JsonResponse
+from django.views.decorators.http import require_GET
 from django.views.generic import ListView
 
 from transit_odp.changelog.constants import ConsumerIssue, PublisherIssue
@@ -28,3 +30,18 @@ class ChangelogView(ListView):
             }
         )
         return context
+
+
+@require_GET
+def get_known_issues_api(request):
+    issues = KnownIssues.objects.filter(deleted=False).order_by("-modified")
+    grouped_issues = {PublisherIssue: [], ConsumerIssue: []}
+    for issue in issues:
+        grouped_issues[issue.category].append(
+            {
+                "description": issue.description,
+                "status": issue.status,
+                "modified": issue.modified.isoformat(),
+            }
+        )
+    return JsonResponse(grouped_issues)

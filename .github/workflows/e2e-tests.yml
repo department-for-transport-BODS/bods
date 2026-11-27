@@ -1,0 +1,75 @@
+name: E2E Tests
+
+on:
+  workflow_dispatch:
+
+env:
+  NODE_VERSION: '24'
+
+jobs:
+  e2e-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    environment: dev
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: e2e/package-lock.json
+
+      - name: Install dependencies
+        working-directory: e2e
+        run: npm ci
+
+      - name: Install Playwright browsers
+        working-directory: e2e
+        run: npx playwright install --with-deps chromium
+
+      - name: Run E2E tests
+        working-directory: e2e
+        run: npm run test:ci
+        env:
+          TEST_BASE_URL: ${{ secrets.TEST_BASE_URL }}
+          TEST_DATA_URL: ${{ secrets.TEST_DATA_URL }}
+          TEST_PUBLISH_URL: ${{ secrets.TEST_PUBLISH_URL }}
+          TEST_USERNAME: ${{ secrets.TEST_USER_EMAIL }}
+          TEST_PASSWORD: ${{ secrets.TEST_USER_PASSWORD }}
+          TEST_ORGANISATION_NAME: ${{ secrets.TEST_ORGANISATION_NAME }}
+          DEFAULT_TIMEOUT: 30000
+          NAVIGATION_TIMEOUT: 30000
+          CI: true
+
+      - name: Upload Playwright report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: e2e/playwright-report/
+          retention-days: 2
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: e2e/test-results/
+          retention-days: 2
+
+      - name: Generate test summary
+        if: always()
+        run: |
+          echo "## E2E Test Results" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          if [ "${{ job.status }}" == "success" ]; then
+            echo "All E2E tests against dev environment passed!" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "Some E2E tests failed. Check the artifacts for details." >> $GITHUB_STEP_SUMMARY
+          fi
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Environment:** dev" >> $GITHUB_STEP_SUMMARY

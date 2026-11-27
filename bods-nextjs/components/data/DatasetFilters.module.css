@@ -1,0 +1,46 @@
+/**
+ * Dataset Filters Styles
+ * 
+ * 
+ * Matches Django SCSS from transit_odp/frontend/assets/sass/components/search/_search.scss
+ */
+
+/* Dataset filters form */
+.dataset-filters {
+  padding: 20px 0;
+}
+
+.dataset-filters .govuk-form-group {
+  margin-bottom: 20px;
+}
+
+/* Filter search input (for org dropdown) */
+.dataset-filters input[type="text"] {
+  margin-bottom: 10px;
+}
+
+/* Ensure dropdowns are full width */
+.dataset-filters .govuk-select {
+  width: 100%;
+}
+
+/* Filter buttons */
+.dataset-filters .govuk-button {
+  width: 100%;
+  margin-bottom: 10px;
+}
+
+.dataset-filters .govuk-button--secondary {
+  background-color: #f3f2f1;
+  color: #0b0c0c;
+  box-shadow: 0 2px 0 #929191;
+}
+
+.dataset-filters .govuk-button--secondary:hover {
+  background-color: #dbdad9;
+}
+
+/* Active filters region */
+.active-filter-tags {
+  margin-bottom: 20px;
+}

@@ -1,0 +1,158 @@
+import Link from 'next/link';
+import type { AvlFeedDetail } from './AvlFeedDetailContent';
+import { AvlTimetableMatching } from './AvlTimetableMatching';
+import { statusIndicatorClass, statusLabel } from '../../_components/avlStatus';
+import { AvlMatchingHelpModal } from '@/components/publish/AvlMatchingHelpModal';
+import { formatDateTime } from '@/lib/utils/date';
+import { publishAppPath } from '@/config/client';
+
+interface AvlFeedDetailTableProps {
+  feedDetail: AvlFeedDetail;
+  orgId: string;
+}
+
+export function AvlFeedDetailTable({ feedDetail, orgId }: AvlFeedDetailTableProps) {
+  const editUrl = publishAppPath(`/org/${orgId}/dataset/avl/${feedDetail.datasetId}/dataset-edit/`);
+  const formattedPublishedAt = formatDateTime(feedDetail.publishedAt);
+  const hasPublishedTimestamp = formattedPublishedAt !== '-';
+  const publishedByDisplay = feedDetail.publishedBy || 'System';
+
+  return (
+    <table className="govuk-table dataset-property-table">
+      <tbody className="govuk-table__body">
+        <tr className="govuk-table__row">
+          <th scope="row" className="govuk-table__header">
+            Name
+          </th>
+          <td className="govuk-table__cell govuk-!-padding-3 dont-break-out">
+            {feedDetail.name}
+          </td>
+        </tr>
+
+        <tr className="govuk-table__row">
+          <th scope="row" className="govuk-table__header">
+            Data feed ID
+          </th>
+          <td className="govuk-table__cell govuk-!-padding-3 dont-break-out">
+            {feedDetail.datasetId}
+          </td>
+        </tr>
+
+        <tr className="govuk-table__row">
+          <th scope="row" className="govuk-table__header">
+            URL link
+          </th>
+          <td className="govuk-table__cell govuk-!-padding-3 dont-break-out">
+            {feedDetail.urlLink}
+          </td>
+        </tr>
+
+        <tr className="govuk-table__row">
+          <th scope="row" className="govuk-table__header">
+            Description
+          </th>
+          <td className="govuk-table__cell govuk-!-padding-3">
+            <div className="flex-between">
+              <span className="dont-break-out">{feedDetail.description}</span>
+              {!feedDetail.isDummy && (
+                <span className="right-justify">
+                  <Link className="govuk-link" href={editUrl}>
+                    Edit
+                  </Link>
+                </span>
+              )}
+            </div>
+          </td>
+        </tr>
+
+        <tr className="govuk-table__row">
+          <th scope="row" className="govuk-table__header">
+            Short description
+          </th>
+          <td className="govuk-table__cell govuk-!-padding-3 dont-break-out">
+            <div className="flex-between">
+              {feedDetail.shortDescription}
+              {!feedDetail.isDummy && (
+                <Link className="govuk-link" href={editUrl}>
+                  Edit
+                </Link>
+              )}
+            </div>
+          </td>
+        </tr>
+
+        <tr className="govuk-table__row">
+          <th scope="row" className="govuk-table__header">
+            Status
+          </th>
+          <td className="govuk-table__cell govuk-!-padding-3">
+            <div className="flex-between">
+              <span className={`status-indicator ${statusIndicatorClass(feedDetail.status)}`}>
+                {statusLabel(feedDetail.status)}
+              </span>
+            </div>
+          </td>
+        </tr>
+
+        <tr className="govuk-table__row">
+          <th scope="row" className="govuk-table__header">
+            AVL to Timetables feed matching
+            <AvlMatchingHelpModal variant="feed" />
+          </th>
+          <td className="govuk-table__cell govuk-!-padding-3">
+            <div className="stacked">
+              <AvlTimetableMatching
+                matching={feedDetail.avlTimetablesMatching}
+                datasetId={feedDetail.datasetId}
+                orgId={orgId}
+              />
+            </div>
+          </td>
+        </tr>
+
+        <tr className="govuk-table__row">
+          <th scope="row" className="govuk-table__header">
+            Owner
+          </th>
+          <td className="govuk-table__cell govuk-!-padding-3">
+            {feedDetail.organisationName}
+          </td>
+        </tr>
+
+        <tr className="govuk-table__row">
+          <th scope="row" className="govuk-table__header">
+            SIRI-VM version
+          </th>
+          <td className="govuk-table__cell govuk-!-padding-3">
+            {feedDetail.siriVersion || '_'}
+          </td>
+        </tr>
+
+        <tr className="govuk-table__row">
+          <th scope="row" className="govuk-table__header">
+            Feed details last updated
+          </th>
+          <td className="govuk-table__cell govuk-!-padding-3">
+            <div className="flex-between">
+              <span>{hasPublishedTimestamp ? `${formattedPublishedAt} by ${publishedByDisplay}` : '-'}</span>
+              <span className="right-justify">
+                <Link className="govuk-link" href={publishAppPath(`/org/${orgId}/dataset/avl/${feedDetail.datasetId}/changelog/`)}>
+                  View change log
+                </Link>
+              </span>
+            </div>
+          </td>
+        </tr>
+
+        <tr className="govuk-table__row">
+          <th scope="row" className="govuk-table__header">
+            Last automated update
+          </th>
+          <td className="govuk-table__cell govuk-!-padding-3">
+            {feedDetail.lastServerUpdate}
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  );
+}

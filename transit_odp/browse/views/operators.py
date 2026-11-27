@@ -72,6 +72,22 @@ from django.views.generic import DetailView
 logger = getLogger(__name__)
 
 
+def get_active_operators_queryset(search_term: str = "", ordering="name"):
+    """
+    Active organisations optionally filtered by name and ordered, shared by the
+    operators list HTML view and the Next.js JSON API.
+    """
+    qs = Organisation.objects.filter(is_active=True)
+
+    search_term = (search_term or "").strip()
+    if search_term:
+        qs = qs.filter(name__icontains=search_term)
+
+    if isinstance(ordering, str):
+        ordering = (ordering,)
+    return qs.order_by(*ordering)
+
+
 class OperatorsView(BaseListView):
     """
     View to list all active organisations.
@@ -93,14 +109,9 @@ class OperatorsView(BaseListView):
         return context
 
     def get_queryset(self):
-        qs = self.model.objects.filter(is_active=True)
-
-        search_term = self.request.GET.get("q", "").strip()
-        if search_term:
-            qs = qs.filter(name__icontains=search_term)
-
-        qs = qs.order_by(*self.get_ordering())
-        return qs
+        return get_active_operators_queryset(
+            self.request.GET.get("q", ""), self.get_ordering()
+        )
 
     def get_ordering(self):
         ordering = self.request.GET.get("ordering", "name")

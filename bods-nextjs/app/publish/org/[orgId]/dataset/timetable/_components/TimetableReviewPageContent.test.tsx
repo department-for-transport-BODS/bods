@@ -1,0 +1,289 @@
+import { render, screen, waitFor, within } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import '@testing-library/jest-dom';
+import { api } from '@/lib/api-client';
+import { navigateTo } from '@/lib/navigate-to';
+import { useDatasetReview } from '@/hooks/useDatasetReview';
+import { publishPath } from '@/config/client';
+import { getTimetablePublishRedirect, TimetableReviewPageContent } from './TimetableReviewPageContent';
+
+jest.mock('next/navigation', () => ({
+  useParams: () => ({ orgId: '1', datasetId: '9' }),
+}));
+
+jest.mock('@/hooks/useDatasetReview', () => ({
+  useDatasetReview: jest.fn(),
+}));
+
+jest.mock('@/lib/api-client', () => ({
+  api: { get: jest.fn(), post: jest.fn() },
+}));
+
+jest.mock('@/lib/navigate-to', () => ({ navigateTo: jest.fn() }));
+
+jest.mock('@/components/data/MapboxRouteMap', () => ({
+  MapboxRouteMap: () => <div data-testid="route-map" />,
+}));
+
+const mockUseDatasetReview = useDatasetReview as jest.Mock;
+const mockAccordionConstructor = jest.fn();
+
+jest.mock('govuk-frontend', () => ({ Accordion: mockAccordionConstructor }), { virtual: true });
+
+const renderContent = (status: Record<string, unknown> | null, isUpdate?: boolean) => {
+  mockUseDatasetReview.mockReturnValue({
+    statusData: status,
+    progress: 50,
+    isInitialLoading: false,
+    errorMessage: '',
+    setErrorMessage: jest.fn(),
+  });
+  return render(<TimetableReviewPageContent isUpdate={isUpdate} />);
+};
+
+const failedStatus = {
+  datasetId: 9,
+  revisionId: 42,
+  status: 'error',
+  progress: 100,
+  loading: false,
+  name: 'Timetable data set',
+  ownerName: 'Test Org',
+  error: 'SCHEMA_ERROR',
+  errorDescription: 'The file is not valid',
+};
+
+const successStatus = {
+  datasetId: 9,
+  revisionId: 42,
+  status: 'success',
+  progress: 100,
+  loading: false,
+  name: 'Draft timetable',
+  description: 'A description',
+  shortDescription: 'Short',
+  ownerName: 'Test Org',
+  downloadUrl: 'https://example.com/feed.xml',
+  publisherUrl: 'https://example.com/feed.xml',
+  transxchangeVersion: '2.4',
+  lastModified: '2026-11-02T12:44:00Z',
+  lastModifiedUser: null,
+  error: null,
+  validationState: 'passed',
+  distinctAttributes: {
+    PD12345678: {
+      ABCD: {
+        'Route 1': ['PB20003801'],
+      },
+    },
+  },
+  dataQuality: { status: 'PENDING' },
+};
+
+describe('TimetableReviewPageContent', () => {
+  beforeEach(() => jest.clearAllMocks());
+
+  describe('processed draft', () => {
+    it('renders the property table with revision-edit links and Last updated', () => {
+      renderContent(successStatus, true);
+
+      const rowHeaders = screen.getAllByRole('rowheader').map((cell) => cell.textContent);
+      expect(rowHeaders).toEqual([
+        'Name',
+        'Description',
+        'Short description',
+        'Status',
+        'Data quality report',
+        'Owner',
+        'TransXChange version',
+        'URL link',
+        'Last updated',
+      ]);
+      screen.getAllByRole('link', { name: 'Edit' }).forEach((link) =>
+        expect(link).toHaveAttribute('href', publishPath('/org/1/dataset/timetable/9/revision-edit/')),
+      );
+      expect(screen.getByText(/by System/)).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: 'Delete data' })).toHaveAttribute(
+        'href',
+        publishPath('/org/1/dataset/timetable/9/delete/'),
+      );
+      expect(screen.getByRole('link', { name: 'Route 1 - PB20003801' })).toHaveAttribute(
+        'href',
+        expect.stringContaining('revision_id=42'),
+      );
+    });
+
+    it('initializes the service-number accordion after review data renders', async () => {
+      renderContent(successStatus);
+
+      await waitFor(() => {
+        expect(mockAccordionConstructor).toHaveBeenCalledWith(
+          document.getElementById('timetable-review-service-numbers'),
+        );
+      });
+    });
+
+    it('hides the consent form while the data quality report is generating', () => {
+      renderContent(successStatus);
+
+      expect(screen.getByText('Generating...')).toBeInTheDocument();
+      expect(screen.queryByRole('checkbox')).not.toBeInTheDocument();
+    });
+
+    it('shows the Django consent form once the data quality report is ready', () => {
+      renderContent({
+        ...successStatus,
+        dataQuality: {
+          status: 'SUCCESS',
+          score: 0.9,
+          ragLevel: 'red',
+          criticalCount: 0,
+          advisoryCount: 0,
+          reportId: 5,
+          hasCriticalIssues: false,
+          showUpdate: true,
+        },
+      });
+
+      expect(screen.getByRole('heading', { name: /3b Data quality check - Red \(90%\)/ })).toBeInTheDocument();
+      const qualityRow = screen.getByRole('row', { name: /Data quality report/ });
+      expect(within(qualityRow).getByText('90%')).toBeInTheDocument();
+      expect(within(qualityRow).getByText('RED')).toHaveClass('status-indicator--error');
+      const consent = screen.getByLabelText('I have reviewed the data quality report and wish to publish my data');
+      expect(consent).toHaveAttribute('name', 'consent');
+      expect(consent).toHaveAttribute('id', 'id_consent');
+      const dataQualityHeading = screen.getByRole('heading', { name: /3b Data quality check/ });
+      const serviceNumbersHeading = screen.getByRole('heading', { name: 'Review Service Numbers' });
+      const publishButton = screen.getByRole('button', { name: 'Publish data' });
+      expect(dataQualityHeading.compareDocumentPosition(consent)).toBe(Node.DOCUMENT_POSITION_FOLLOWING);
+      expect(consent.compareDocumentPosition(serviceNumbersHeading)).toBe(Node.DOCUMENT_POSITION_FOLLOWING);
+      expect(publishButton.compareDocumentPosition(serviceNumbersHeading)).toBe(Node.DOCUMENT_POSITION_FOLLOWING);
+      expect(publishButton).toBeDisabled();
+      expect(screen.getByRole('button', { name: 'Update data' })).toHaveAttribute(
+        'href',
+        publishPath('/org/1/dataset/timetable/9/review/update'),
+      );
+    });
+  });
+
+  describe('first publish (review/)', () => {
+    it('uses the Describe data / Provide data stepper', () => {
+      renderContent({ ...failedStatus, loading: true });
+
+      expect(screen.getByText('1. Describe data')).toBeInTheDocument();
+      expect(screen.getByText('2. Provide data')).toBeInTheDocument();
+      expect(screen.queryByText('1. Comment')).not.toBeInTheDocument();
+    });
+
+    it('links the failed upload to review/update', () => {
+      renderContent(failedStatus);
+
+      expect(screen.getByRole('button', { name: 'Publish correct data set' })).toHaveAttribute(
+        'href',
+        publishPath('/org/1/dataset/timetable/9/review/update'),
+      );
+    });
+  });
+
+  describe('update revision (update/review/)', () => {
+    it('uses the Comment / Update stepper', () => {
+      renderContent({ ...failedStatus, loading: true }, true);
+
+      expect(screen.getByText('1. Comment')).toBeInTheDocument();
+      expect(screen.getByText('2. Update')).toBeInTheDocument();
+      expect(screen.getByText('3. Review and publish')).toBeInTheDocument();
+      expect(screen.queryByText('1. Describe data')).not.toBeInTheDocument();
+    });
+
+    it('selects the Update step while the data is validating', () => {
+      renderContent({ ...failedStatus, loading: true }, true);
+
+      expect(screen.getByText('2. Update').closest('li')).toHaveClass(
+        'publish-stepper__item--selected',
+      );
+    });
+
+    it('links the failed upload to update/review/update', () => {
+      renderContent(failedStatus, true);
+
+      expect(screen.getByRole('button', { name: 'Publish correct data set' })).toHaveAttribute(
+        'href',
+        publishPath('/org/1/dataset/timetable/9/update/review/update'),
+      );
+    });
+  });
+});
+
+describe('publishing from the review page', () => {
+  const readyStatus = {
+    ...successStatus,
+    dataQuality: {
+      status: 'SUCCESS',
+      score: 0.9,
+      ragLevel: 'green',
+      criticalCount: 0,
+      advisoryCount: 0,
+      reportId: 5,
+      hasCriticalIssues: false,
+      showUpdate: true,
+    },
+  };
+
+  const publish = async () => {
+    const user = userEvent.setup();
+    await user.click(screen.getByLabelText('I have reviewed the data quality report and wish to publish my data'));
+    await user.click(screen.getByRole('button', { name: 'Publish data' }));
+  };
+
+  beforeEach(() => jest.clearAllMocks());
+
+  it.each([
+    ['first publish (review/)', false, '/org/1/dataset/timetable/9/success/'],
+    ['update (update/review/)', true, '/org/1/dataset/timetable/9/update/success/'],
+  ])('posts to the publish API then opens the confirmation page for a %s', async (_name, isUpdate, successPath) => {
+    (api.post as jest.Mock).mockResolvedValue({ published: true, redirect: '/publish/org/1/dataset/timetable' });
+    renderContent(readyStatus, isUpdate);
+
+    await publish();
+
+    await waitFor(() => expect(navigateTo).toHaveBeenCalledTimes(1));
+    expect(api.post).toHaveBeenCalledTimes(1);
+    expect(api.post).toHaveBeenCalledWith('/api/publish/timetables/publish/1/9/');
+    expect(navigateTo).toHaveBeenCalledWith(publishPath(successPath));
+  });
+
+  it('does not publish until the consent box is ticked', async () => {
+    renderContent(readyStatus);
+
+    await userEvent.setup().click(screen.getByRole('button', { name: 'Publish data' }));
+
+    expect(api.post).not.toHaveBeenCalled();
+    expect(navigateTo).not.toHaveBeenCalled();
+  });
+
+  it('stays on the review page when publishing fails', async () => {
+    (api.post as jest.Mock).mockRejectedValue(new Error('Dataset is still processing'));
+    renderContent(readyStatus);
+
+    await publish();
+
+    await waitFor(() => expect(api.post).toHaveBeenCalledTimes(1));
+    expect(navigateTo).not.toHaveBeenCalled();
+  });
+});
+
+describe('getTimetablePublishRedirect', () => {
+  const ids = { orgId: '1', datasetId: '9' };
+
+  it('goes to update/success after publishing an update revision', () => {
+    expect(getTimetablePublishRedirect({ ...ids, isUpdate: true })).toBe(
+      publishPath('/org/1/dataset/timetable/9/update/success/'),
+    );
+  });
+
+  it('goes to success after a first publish, like Django PublishRevisionView', () => {
+    expect(getTimetablePublishRedirect({ ...ids, isUpdate: false })).toBe(
+      publishPath('/org/1/dataset/timetable/9/success/'),
+    );
+  });
+});

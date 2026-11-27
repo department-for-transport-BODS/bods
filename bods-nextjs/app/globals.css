@@ -1,0 +1,1717 @@
+/**
+ * Global styles for BODS Next.js
+ *
+ * GOV.UK frontend styles are compiled from the package Sass entrypoint in the root layout.
+ * This file contains BODS-specific styles that extend GDS.
+ * TODO: Remove the below comment
+ * INFO: DO NOT add styles that conflict with GDS - the site must look
+ * identical to the Django version which uses govuk-frontend.
+ */
+
+/*
+ * Django renders breadcrumbs and the publish stepper above `govuk-main-wrapper`, so the
+ * wrapper's top padding sits below them. Many Next.js pages render them as the wrapper's first child,
+ * which pushes them down by that padding. Cancel the padding above and restore it below.
+ * Wrappers that zero their own top padding are left alone. --main-wrapper-padding mirrors govuk-frontend's `.govuk-main-wrapper` (20px, 40px from tablet).
+ */
+.govuk-main-wrapper {
+  --main-wrapper-padding: 20px;
+}
+
+@media (min-width: 40.0625em) {
+  .govuk-main-wrapper {
+    --main-wrapper-padding: 40px;
+  }
+}
+
+.govuk-main-wrapper:not(.govuk-\!-padding-top-0) > .govuk-breadcrumbs:first-child {
+  margin-top: calc(10px - var(--main-wrapper-padding));
+  margin-bottom: 0;
+  /* Padding rather than margin so it adds to, not collapses with, the next element's top margin. */
+  padding-bottom: calc(10px + var(--main-wrapper-padding));
+}
+
+/* Reset any browser defaults that might conflict */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+/* Ensure body has no margin */
+body {
+  margin: 0;
+}
+
+#swagger-ui .wrapper {
+  padding: 0;
+}
+
+.justify-center-l {
+  justify-content: center;
+}
+
+.flex-container {
+  display: flex;
+}
+
+.content-center {
+  align-content: center;
+}
+
+.flexfill {
+  flex: 1;
+}
+
+/* Mirrors transit_odp/frontend/assets/sass/common.scss .link-dark */
+.govuk-link.link-dark {
+  text-decoration: none !important;
+  color: var(--govuk-colour-black) !important;
+}
+
+/* Mirrors transit_odp/frontend/assets/sass/common.scss .bg-light-p-font-lg */
+.bg-light-p-font-lg {
+  background-color: var(--govuk-colour-light-grey);
+  text-align: left;
+  vertical-align: middle;
+  padding: 20px 40px;
+  font-size: 1.1875rem;
+  line-height: 1.3157894737;
+}
+
+/* Mirrors transit_odp/frontend/assets/sass/components/guidance/_guidance.scss .guidance-text-highlight */
+.guidance-text-highlight {
+  background-color: #ddd;
+}
+
+
+/**
+ * GOV.UK colour palette exposed as CSS custom properties.
+ * Values mirror the Sass colours in govuk-frontend/settings/_colours-palette.scss
+ * so we can reference them from plain CSS. Keep in sync with GDS.
+ */
+:root {
+  --govuk-colour-red: #d4351c;
+  --govuk-colour-yellow: #ffdd00;
+  --govuk-colour-green: #00703c;
+  --govuk-colour-blue: #1d70b8;
+  --govuk-colour-dark-blue: #003078;
+  --govuk-colour-light-blue: #5694ca;
+  --govuk-colour-black: #0b0c0c;
+  --govuk-colour-dark-grey: #505a5f;
+  --govuk-colour-mid-grey: #b1b4b6;
+  --govuk-colour-light-grey: #f3f2f1;
+  --govuk-colour-white: #ffffff;
+  --govuk-colour-light-green: #85994b;
+  --govuk-error-colour: #d4351c;
+}
+
+/**
+ * BODS Custom Components
+ * These styles match the Django frontend exactly
+ */
+
+/* Masthead / Hero Section */
+.app-masthead {
+  padding-top: 0.1px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid #1d70b8; /* govuk-colour("blue") */
+  color: #ffffff;
+  background-color: #1d70b8; /* govuk-colour("blue") */
+  margin-top: 16px;
+  width: 100vw;
+  position: relative;
+  left: 50%;
+  right: 50%;
+  margin-left: -50vw;
+  margin-right: -50vw;
+}
+
+.app-masthead .govuk-body {
+  color: #ffffff;
+}
+
+.app-masthead .govuk-body a {
+  color: #ffffff !important;
+}
+
+.app-masthead__title {
+  color: #ffffff !important;
+  margin-bottom: 20px;
+  white-space: nowrap;
+}
+
+@media (min-width: 40.0625em) {
+  .govuk-heading-xl {
+    line-height: 50px;
+  }
+}
+
+.app-masthead__title_agent_dashboard {
+  color: #ffffff !important;
+  margin-bottom: 20px;
+  white-space: normal;
+}
+
+.app-masthead__description {
+  max-width: 40em;
+}
+
+.app-feature-block {
+  margin-bottom: 32px;
+  max-width: 40em;
+}
+
+.publish-home-masthead-copy .app-masthead__title {
+  margin-bottom: 10px;
+}
+
+.publish-home-masthead-copy .govuk-body {
+  margin-top: 0;
+}
+
+/* Inverted links for masthead */
+.app-a--inverted,
+.app-a--inverted:link,
+.app-a--inverted:visited {
+  color: #ffffff !important;
+}
+
+/* Inverted button for masthead */
+.govuk-button.app-button--inverted,
+.govuk-button.app-button--inverted:link,
+.govuk-button.app-button--inverted:visited,
+.govuk-button.app-button--inverted:hover,
+.govuk-button.app-button--inverted:focus,
+.govuk-button.app-button--inverted:active {
+  color: #1d70b8 !important;
+  background-color: #ffffff !important;
+  border-color: #ffffff !important;
+  box-shadow: 0 2px 0 #1d70b8 !important;
+  text-decoration: none;
+}
+
+.govuk-button.app-button--inverted:hover {
+  background-color: #f3f2f1 !important;
+}
+
+.govuk-button.app-button--inverted:focus {
+  outline: 3px solid #ffdd00;
+  outline-offset: 0;
+}
+
+.govuk-button.app-button--inverted:active {
+  top: 2px;
+}
+
+.govuk-button.app-button--green,
+.govuk-button.app-button--green:link,
+.govuk-button.app-button--green:visited,
+.govuk-button.app-button--green:hover,
+.govuk-button.app-button--green:focus,
+.govuk-button.app-button--green:active {
+  color: #ffffff !important;
+  background-color: #00703c !important;
+  border-color: #00703c !important;
+  box-shadow: 0 2px 0 #002d18 !important;
+}
+
+.govuk-button.app-button--green:hover {
+  background-color: #005a30 !important;
+}
+
+.govuk-button.app-button--green:focus {
+  outline: 3px solid #ffdd00;
+  outline-offset: 0;
+}
+
+/* Navigation list */
+.app-list--nav {
+  margin-top: 0;
+}
+
+.app-list--nav li {
+  margin-bottom: 10px;
+}
+
+/* Navigation bold link */
+.app-nav-bold {
+  font-weight: 700;
+}
+
+/* Header navigation layout mirrors Django templates. */
+.govuk-header__navigation {
+  display: flex;
+}
+
+.account-menu__icon {
+  vertical-align: middle;
+  margin-right: 0.2rem;
+}
+
+.bods-dropdown {
+  display: block;
+  font-family: "GDS Transport", arial, sans-serif;
+  /* govuk-font($size: 16) as in Django's .bods-dropdown */
+  font-size: 14px;
+  line-height: 1.14286;
+  color: #ffffff;
+  background: none;
+}
+
+@media (min-width: 40.0625em) {
+  .bods-dropdown {
+    font-size: 16px;
+    line-height: 1.25;
+  }
+}
+
+/*
+ * Arrow mirrors Django's .bods-dropdown::after: it sits on the <li>, outside the
+ * toggle, so the focus highlight covers only the icon and text.
+ */
+.bods-dropdown::after {
+  content: "";
+  display: inline-block;
+  margin-left: 5px;
+  border-style: solid;
+  border-color: transparent;
+  border-width: 8px 5px 0;
+  border-top-color: #ffffff;
+}
+
+.bods-dropdown.open::after {
+  border-width: 0 5px 8px;
+  border-top-color: transparent;
+  border-bottom-color: #ffffff;
+}
+
+.bods-dropdown .bods-dropdown__toggle {
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  color: #ffffff;
+  padding: 0;
+  font: inherit;
+}
+
+/* GOV.UK focus state, as on Django's <a class="govuk-header__link">; the icon stays white as its PNG does. */
+.bods-dropdown .bods-dropdown__toggle:focus {
+  background-color: #ffdd00;
+  color: #0b0c0c;
+}
+
+.bods-dropdown .bods-dropdown__toggle:focus .account-menu__icon {
+  color: #ffffff;
+}
+
+/* As in Django, the menu is positioned where it falls, directly below the toggle. */
+.dropdown .dropdown-content {
+  display: none;
+  position: absolute;
+  min-width: 160px;
+  background-color: #f3f2f1;
+  box-shadow: 0 8px 16px 0 #0b0c0c;
+  z-index: 1;
+}
+
+.dropdown .dropdown-content.open {
+  display: block;
+}
+
+.dropdown .dropdown-content .govuk-link {
+  display: block;
+  padding: 12px 16px;
+  text-align: left;
+  text-decoration: none;
+}
+
+.dropdown .dropdown-content .govuk-link:hover {
+  background-color: #f3f2f1;
+}
+
+/* Data browser shared styles */
+.app-data-browser__searchbox {
+  width: 100%;
+  display: flex;
+  margin-bottom: 30px;
+}
+
+.app-data-browser__searchbox-input {
+  width: 100%;
+  height: 45px;
+  z-index: 1;
+}
+
+.app-data-browser__searchbox-button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #0b0c0c;
+  height: 45px;
+  width: 45px;
+  border: 0;
+  cursor: pointer;
+}
+
+.app-data-browser__searchbox-button:focus {
+  outline: 3px solid #ffdd00;
+  outline-offset: 0;
+}
+
+.app-data-browser__result-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: "GDS Transport", arial, sans-serif;
+  font-size: 1.125rem;
+  line-height: 1.3157894737;
+}
+
+.app-data-browser__title-link {
+  margin-right: 1rem;
+}
+
+.app-data-browser__status-dot {
+  width: 1.125rem;
+  height: 1.125rem;
+  border-radius: 50%;
+  display: inline-block;
+  margin: 0 0.4rem 0 0.2rem;
+}
+
+.app-data-browser__status-dot--live {
+  background-color: #006435;
+}
+
+.app-data-browser__status-dot--inactive {
+  background-color: #6f777b;
+}
+
+.app-data-browser__status-dot--error {
+  background-color: #d4351c;
+}
+
+.app-data-browser__status-text {
+  font-family: "GDS Transport", Arial, sans-serif;
+  font-size: inherit;
+  white-space: pre;
+}
+
+.app-data-browser__key-value-list {
+  list-style: none;
+  padding: 0;
+  margin: 15px 0 0;
+  font-family: "GDS Transport", arial, sans-serif;
+  font-size: 19px;
+  line-height: 25px;
+}
+
+/* Django `.key-value-list`: inline-blocks, so a wrapped key lines the value up with its last line. */
+.app-data-browser__key-value-item {
+  display: block;
+  margin: 0;
+}
+
+.app-data-browser__item-key {
+  display: inline-block;
+  width: 35%;
+  padding-bottom: 10px;
+  font-weight: 700;
+}
+
+.app-data-browser__item-value {
+  display: inline-block;
+}
+
+/* Django's `.search-list__heading` has no styles: a plain block whose inline span ignores its margins. */
+.app-data-browser__results-heading {
+  margin: 0;
+}
+
+.search-pillbox {
+  box-sizing: content-box;
+  display: flex;
+  justify-content: flex-start;
+  flex-wrap: wrap;
+  align-items: center;
+  background-color: #f6f5f5;
+  min-height: 40px;
+  padding: 15px;
+  border: 0;
+  margin: 0;
+}
+
+.search-pillbox a {
+  text-decoration: none;
+}
+
+.pill-item {
+  border: 1px solid #505a5f;
+  border-radius: 4px;
+  padding: 5px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-start;
+  background-color: #f9f9f8;
+  color: #0b0c0c;
+  font: inherit;
+}
+
+.pill-item__image {
+  padding: 5px;
+  align-self: center;
+  width: 26px;
+  height: 26px;
+}
+
+.pill-item__label {
+  padding: 5px;
+  color: #0b0c0c;
+}
+
+.pillbox-break {
+  border-bottom-color: #0b0c0c;
+  margin-top: 10px;
+  margin-bottom: 15px;
+}
+
+.app-data-browser__sort-control {
+  margin-bottom: 30px;
+  max-width: 240px;
+}
+
+.app-data-browser__result-item {
+  margin-bottom: 3rem;
+}
+
+.app-data-browser__result-divider {
+  border: 0;
+  border-bottom: 1px solid #b1b4b6;
+  margin: 20px 0;
+}
+
+/* Django's normalize.css gives hr overflow: visible, so an empty section break's margins collapse through it. */
+.app-data-browser__empty-break {
+  overflow: visible;
+  box-sizing: content-box;
+}
+
+/* Dataset detail shared styles */
+.consumer-property-table {
+  margin-bottom: 30px;
+}
+
+.dont-break-out {
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+.stacked {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.flex-between {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.right-justify {
+  text-align: right;
+}
+
+/* transit_odp/frontend/assets/sass/components/button/_button-holder.scss */
+.button-holder button:not(:last-child),
+.button-holder a:not(:last-child) {
+  margin-right: 1.5rem;
+}
+
+.dataset-property-table .flex-between {
+  align-items: flex-start;
+}
+
+.govuk-button-group {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.app-mb-4 {
+  margin-bottom: 20px;
+}
+
+.app-mb-sm-0 {
+  margin-bottom: 0;
+}
+
+/* Guide me step navigation pattern */
+.app-step-nav__steps {
+  padding: 0;
+  margin: 0;
+}
+
+.app-step-nav__step {
+  position: relative;
+  list-style: none;
+  padding-left: 45px;
+}
+
+.app-step-nav__step::after {
+  content: "";
+  position: absolute;
+  top: 15px;
+  left: 12px;
+  width: 0;
+  height: 100%;
+  border-left: 2px solid #b1b4b6;
+  background: #ffffff;
+}
+
+.app-step-nav__step:last-child::before {
+  content: "";
+  position: absolute;
+  z-index: 6;
+  bottom: 0;
+  left: 6px;
+  width: 13px;
+  height: 0;
+  border-bottom: 2px solid #b1b4b6;
+}
+
+.app-step-nav__step:last-child::after {
+  height: calc(100% - 15px);
+}
+
+.app-step-nav__header {
+  padding: 15px 0;
+  border-top: 2px solid #b1b4b6;
+}
+
+.app-step-nav__title {
+  color: #0b0c0c;
+  margin: 0;
+  font-size: 19px;
+  line-height: 1.4;
+  font-weight: 700;
+  font-family: "GDS Transport", arial, sans-serif;
+}
+
+.app-step-nav__circle {
+  box-sizing: border-box;
+  position: absolute;
+  z-index: 5;
+  top: 15px;
+  left: 0;
+  width: 26px;
+  height: 26px;
+  color: #0b0c0c;
+  background: #ffffff;
+  border-radius: 100px;
+  text-align: center;
+}
+
+.app-step-nav__circle--number {
+  border: 2px solid #b1b4b6;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 23px;
+  font-family: "GDS Transport", arial, sans-serif;
+}
+
+.app-step-nav__circle-inner {
+  float: right;
+  min-width: 100%;
+}
+
+.app-step-nav__panel {
+  color: #0b0c0c;
+  font-size: 16px;
+  font-family: "GDS Transport", arial, sans-serif;
+}
+
+.app-step-nav__paragraph {
+  padding-bottom: 15px;
+  margin: 0;
+}
+
+/* Dashed list style used by guidance section index pages */
+ul.dashed {
+  list-style-type: none;
+  padding-left: 0;
+}
+
+ul.dashed > li {
+  text-indent: -10px;
+  padding-left: 10px;
+}
+
+ul.dashed > li::before {
+  content: "-";
+  margin-right: 4px;
+}
+
+/* Legacy publish/review component styles used by fares review */
+.app-dqs-panel {
+  text-align: left;
+  border: 5px solid #0b0c0c;
+  padding: 20px;
+  background: transparent;
+}
+
+.app-dqs-panel.timetable-review-panel {
+  padding: 20px;
+}
+
+@media (min-width: 641px) {
+  .app-dqs-panel.timetable-review-panel {
+    padding: 30px;
+  }
+}
+
+.app-dqs-panel__body {
+  font-family: "GDS Transport", arial, sans-serif;
+  font-size: 19px;
+  line-height: 1.32;
+}
+
+.dataset-property-table .govuk-table__row th,
+.dataset-property-table .govuk-table__row td {
+  padding: 20px 0;
+}
+
+.feed-stat {
+  display: inline-block;
+  min-width: 8rem;
+  font-weight: 700;
+  font-family: "GDS Transport", Arial, sans-serif;
+}
+
+.feed-stat__list {
+  width: 100%;
+  padding: 1rem;
+}
+
+.feed-stat__label {
+  display: block;
+  color: var(--govuk-colour-black);
+}
+
+.feed-stat__value {
+  display: block;
+  color: var(--govuk-colour-black);
+  font-size: 3rem;
+}
+
+.feed-stat__value--l {
+  font-size: 5rem;
+}
+
+.status-indicator {
+  font-family: "GDS Transport", Arial, sans-serif;
+  font-size: inherit;
+  white-space: nowrap;
+}
+
+.status-indicator::before {
+  content: " ";
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  margin: 0 6px 0 4px;
+}
+
+.status-indicator--success::before {
+  background-color: var(--govuk-colour-green);
+}
+
+.status-indicator--indexing::before {
+  background-color: var(--govuk-colour-blue);
+}
+
+.status-indicator--warning::before {
+  background-color: var(--govuk-colour-yellow);
+}
+
+.status-indicator--unavailable::before {
+  background-color: #f47738;
+}
+
+.status-indicator--inactive::before {
+  background-color: var(--govuk-colour-red);
+}
+
+.status-indicator--error::before {
+  background-color: var(--govuk-error-colour);
+}
+
+.status-indicator--draft::before,
+.status-indicator--pending::before {
+  background-color: var(--govuk-colour-mid-grey);
+}
+
+.review-map-placeholder {
+  border: 1px solid #b1b4b6;
+  background: linear-gradient(180deg, #e8edef 0%, #dfe5e7 100%);
+  height: 280px;
+  position: relative;
+}
+
+.review-map-placeholder__inner {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #505a5f;
+  font-weight: 700;
+}
+/* Publish Stepper */
+.publish-stepper {
+  font-size: 19px;
+  color: #0b0c0c;
+  padding-left: 0;
+  margin-top: 0;
+  margin-bottom: 0;
+  border-bottom: 1px solid #b1b4b6;
+  list-style: none;
+  display: flex;
+}
+
+.publish-stepper .publish-stepper__item {
+  display: inline-flex;
+  margin-right: 15px;
+  padding-bottom: 10px;
+}
+
+.publish-stepper .publish-stepper__item--previous {
+  color: #1d70b8;
+  font-family: "GDS Transport", arial, sans-serif;
+}
+
+.publish-stepper .publish-stepper__item--next {
+  color: #505a5f;
+  font-family: "GDS Transport", arial, sans-serif;
+}
+
+.publish-stepper .publish-stepper__item--selected {
+  color: #000000;
+  font-family: "GDS Transport", arial, sans-serif;
+  font-weight: bold;
+  font-size: 1.25rem;
+  border-bottom: 5px solid black;
+  padding-bottom: 5px;
+}
+
+/* Utility: unstyled button that looks like a link */
+.app-link-button {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  text-align: left;
+  font-size: inherit;
+  font-family: inherit;
+}
+
+.app-link-button:hover {
+  text-decoration: underline;
+  text-decoration-thickness: 3px;
+  text-decoration-skip-ink: none;
+}
+
+/* Legacy utility parity for migrated Django pages */
+.indented-text {
+  padding-left: 15px;
+}
+
+.large-font {
+  font-family: "GDS Transport", arial, sans-serif;
+  font-size: 19px;
+  line-height: 1.3157894737;
+}
+
+.blue-background {
+  background-color: #1d70b8;
+}
+
+/* Dataset "Choose data type" page */
+.app-dataset-form {
+  font-family: sans-serif;
+  max-width: 400px;
+  margin: 60px auto;
+}
+
+.app-dataset-form__option {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+  cursor: pointer;
+  font-size: 1rem;
+}
+
+.app-dataset-form__button {
+  margin-top: 16px;
+  padding: 8px 20px;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.app-dataset-form__selected {
+  margin-top: 16px;
+  color: #555;
+}
+
+/* =========================================================
+   Publish list page: masthead title variant and review banner
+   Mirrors transit_odp/frontend/assets/sass/components/banner/_title-banner.scss
+   and transit_odp/frontend/assets/sass/components/publish_list/_publish_list.scss
+   ========================================================= */
+
+.app-masthead__title_agent_dashboard {
+  color: #ffffff !important;
+  margin-bottom: 20px;
+  white-space: normal;
+}
+
+.review-banner {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  justify-content: flex-start;
+}
+
+.review-stat {
+  margin: 0 35px 35px 0;
+}
+
+.review-stat:last-child {
+  margin-right: unset;
+}
+
+.review-stat__top {
+  font-family: "GDS Transport", arial, sans-serif;
+  font-size: 48px;
+  line-height: 50px;
+  font-weight: 700;
+}
+
+.review-stat__spaced-label {
+  letter-spacing: 0.02em;
+}
+
+.review-stat__top .bods-relative-bottom {
+  bottom: -2px;
+}
+
+.review-stat__bottom {
+  font-family: "GDS Transport", arial, sans-serif;
+  font-size: 19px;
+  line-height: 25px;
+  position: relative;
+  right: 5px;
+}
+
+.review-stat__description {
+  font-family: "GDS Transport", arial, sans-serif;
+  font-size: 16px;
+  line-height: 20px;
+  font-weight: 700;
+  margin: 0 0 30px 0;
+}
+
+.review-stat__details {
+  margin-top: auto;
+}
+
+a.review-stat__link {
+  font-family: "GDS Transport", arial, sans-serif;
+  font-size: 16px;
+  line-height: 20px;
+  color: inherit;
+}
+
+a.review-stat__link:visited {
+  color: unset;
+}
+
+/* custom_govuk_table: same as govuk-table but with inverted borders */
+.custom_govuk_table {
+  width: 100%;
+  border-spacing: 0;
+  border-collapse: collapse;
+}
+
+.custom_govuk_table .govuk-table__header,
+.custom_govuk_table .govuk-table__cell {
+  border-top: 1px solid #b1b4b6;
+  border-bottom: none;
+}
+
+.custom_govuk_table .govuk-table__header {
+  font-weight: normal;
+  font-size: 18px;
+}
+
+.custom_govuk_table .govuk-table__head .govuk-table__row:first-child .govuk-table__header {
+  border-top: none;
+}
+
+.custom_govuk_table .govuk-table__body .govuk-table__row:last-child .govuk-table__cell,
+.custom_govuk_table .govuk-table__body .govuk-table__row:last-child .govuk-table__header {
+  border-bottom: 1px solid #b1b4b6;
+}
+
+/* Data quality tables keep Django's bold headers; other custom_govuk_table users have sortable link headers */
+.custom_govuk_table--dqs .govuk-table__header {
+  font-weight: 700;
+}
+
+.custom_govuk_table--dqs .govuk-table__cell {
+  font-size: 18px;
+}
+
+/*
+ * List of error messages under a table row (Django core/_lists.scss .govuk-list--error);
+ * govuk-frontend has no such modifier, so without this the list keeps its default margins.
+ */
+.govuk-list--error {
+  margin: 0;
+  padding-left: 20px;
+}
+
+.govuk-list--error li {
+  padding-left: 15px;
+  border-left: 5px solid #d4351c;
+}
+
+/*
+ * Changelog tables (feed_change_log_table.html): bold headers, 18px cells, and the error row
+ * sits flush under its revision row so the pair reads as one row (Django _table.scss).
+ */
+.custom_govuk_table--changelog .govuk-table__header {
+  font-weight: 700;
+}
+
+.custom_govuk_table--changelog .govuk-table__cell {
+  font-size: 18px;
+}
+
+.custom_govuk_table--changelog .govuk-table__row + .govuk-table__row--error .govuk-table__cell {
+  border-top: 0;
+  padding-top: 0;
+}
+
+/* Ported from transit_odp/frontend/assets/sass/components/data_quality/_data_quality.scss */
+.total_vehicles {
+  width: 23%;
+  margin-bottom: 25px;
+}
+
+/* Ported from transit_odp/frontend/assets/sass/components/tooltip/_tooltip.scss */
+.tooltip {
+  position: relative;
+  display: inline-block;
+  cursor: pointer;
+  color: #1d70b8;
+}
+
+.tooltip .tooltiptext {
+  visibility: hidden;
+  text-align: left;
+  padding: 10px 10px;
+  border-radius: 10px;
+  background-color: white;
+  position: absolute;
+  bottom: 70%;
+  cursor: auto;
+  opacity: 0;
+  transition: opacity 0.3s;
+  border: 2px solid black;
+  color: #0b0c0c;
+  width: 300px;
+  box-sizing: content-box;
+  box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.3);
+}
+
+.tooltip .tooltiptext::before,
+.tooltip .tooltiptext::after {
+  border-left: 10px solid transparent;
+  border-right: 10px solid transparent;
+  content: " ";
+  position: absolute;
+  top: 100%;
+  left: 5%;
+  border-width: 10px;
+  width: 0;
+  border-style: solid;
+  border-color: #b1b4b6 transparent transparent transparent;
+}
+
+.tooltip .tooltiptext::before {
+  border-top: 10px solid black;
+  margin-top: 1px;
+}
+
+.tooltip .tooltiptext::after {
+  border-top: 10px solid white;
+  margin-top: -2px;
+  z-index: 1;
+}
+
+.showtooltip {
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+.tooltip div.tooltiptext {
+  bottom: 130%;
+}
+
+.timetable_govuk_body {
+  overflow: visible !important;
+}
+
+#timetable_tooltip > div > div.govuk-accordion__section-header > span > button {
+  padding-bottom: 0;
+}
+
+span.text-color-red {
+  color: #d4351c;
+}
+
+/* Ported from transit_odp/frontend/assets/sass/components/table/_table.scss */
+.timetables_govuk_table .govuk-table__header:first-child,
+.timetables_govuk_table .govuk-table__cell:first-child {
+  width: 25%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Ported from transit_odp/frontend/assets/sass/common.scss */
+.w-90-l {
+  width: 90%;
+}
+
+.end-justified {
+  justify-content: end;
+}
+
+.shifted-text {
+  position: relative;
+  top: 5px;
+}
+
+.disruptions-width {
+  width: 100% !important;
+  height: 25rem !important;
+}
+
+.position-relative {
+  position: relative;
+}
+
+#map-updated-timestamp {
+  position: absolute;
+  bottom: 0;
+  right: 50px;
+  font-family: "GDS Transport", arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-weight: 400;
+  font-size: 0.875rem;
+  line-height: 1.1428571429;
+  background: #f3f2f1;
+  color: #0b0c0c;
+  padding: 5px;
+  opacity: 0.6;
+}
+
+@media (min-width: 40.0625em) {
+  #map-updated-timestamp {
+    font-size: 1rem;
+    line-height: 1.25;
+  }
+}
+
+.avl-changelog-page__back-link {
+  display: inline-block;
+  margin-bottom: 40px;
+}
+
+.avl-changelog-page .govuk-main-wrapper {
+  padding-top: 16px;
+}
+
+.avl-changelog-page .custom_govuk_table .govuk-table__header {
+  font-weight: 700;
+}
+
+/* select-wrapper: container for the Choose data type dropdown */
+.select-wrapper {
+  position: relative;
+}
+
+/* Help modal styling */
+.help-modal {
+  display: inline;
+}
+
+.help-modal .help-icon {
+  color: #1d70b8;
+  cursor: pointer;
+}
+
+.help-modal .help-icon-white {
+  color: #ffffff;
+  cursor: pointer;
+}
+
+.help-modal .help-icon-blue {
+  color: #1d70b8;
+  cursor: pointer;
+}
+
+.help-modal .help-icon:not(.help-icon-white):hover,
+.help-modal .help-icon:not(.help-icon-white):focus,
+.help-modal .help-icon-blue:hover,
+.help-modal .help-icon-blue:focus {
+  color: #1d70b8;
+}
+
+.help-modal .help-icon:not(.help-icon-white):focus-visible,
+.help-modal .help-icon-blue:focus-visible,
+.help-modal [role="button"]:focus-visible {
+  outline: 3px solid #ffdd00;
+  outline-offset: 2px;
+}
+
+.help-modal .overlay {
+  display: none;
+  position: fixed;
+  justify-content: center;
+  align-items: center;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  background: rgba(0, 0, 0, 0.7);
+  z-index: 1000;
+}
+
+.help-modal .overlay.active {
+  display: flex;
+}
+
+.help-modal .overlay .window {
+  position: relative;
+  width: 100%;
+  max-width: 75%;
+  background: #ffffff;
+  padding: 20px;
+  border: 1px solid #b1b4b6;
+}
+
+.help-modal .overlay .close-button {
+  position: absolute;
+  top: 25px;
+  right: 20px;
+  margin: 0;
+  border: 0;
+  border-style: none;
+  background-color: transparent;
+  padding: 0;
+  cursor: pointer;
+  font-family: "GDS Transport", arial, sans-serif;
+  font-size: 19px;
+}
+
+.help-modal .overlay .content {
+  position: relative;
+  margin-top: 40px;
+}
+
+.help-modal .overlay .content .govuk-body {
+  color: #0b0c0c;
+}
+
+/* Position utility for relative bottom offset */
+.bods-relative-bottom {
+  position: relative;
+  bottom: -5px;
+}
+
+/* Timetable upload validation panel */
+.timetable-validation-panel {
+  background-color: var(--govuk-colour-green) !important;
+}
+
+.timetable-validation-panel .govuk-panel__title,
+.timetable-validation-panel .govuk-panel__body {
+  color: var(--govuk-colour-white);
+}
+
+.timetable-validation-panel .govuk-panel__body p {
+  margin-top: 0;
+}
+
+.progress-bar-outer {
+  width: 100%;
+  background-color: #005ea5;
+}
+
+.progress-bar-inner {
+  height: 30px;
+  background-color: var(--govuk-colour-white);
+}
+
+.progress-bar-text {
+  display: inline-block;
+  width: 4rem;
+  height: 2.56rem;
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--govuk-colour-white);
+  align-content: center;
+}
+
+.timetable-review-panel {
+  border: 3px solid var(--govuk-colour-black);
+  margin-bottom: 15px;
+  padding: 20px;
+}
+
+.timetable-review-panel--error {
+  border-color: var(--govuk-error-colour);
+}
+
+.app-dqs-panel__loading__progress {
+  display: flex;
+  align-items: center;
+  flex-wrap: nowrap;
+  margin-bottom: 15px;
+}
+
+.app-error-summary__item {
+  color: var(--govuk-error-colour);
+  font-size: 19px;
+  font-weight: 700;
+  text-decoration: underline;
+}
+/* add the yellow box around the red error summary box which appears when the error is focused */
+.app-error-summary--highlighted{
+  outline: 3px solid #ffdd00;
+}
+
+/* Dataset detail: error panel, API URL panel (transit_odp/frontend/assets/sass) */
+.app-panel--error {
+  background: #d4351c;
+}
+
+.app-panel--error .govuk-panel__title {
+  font-size: 2rem;
+  color: #ffffff;
+}
+
+.app-panel--error .govuk-panel__body {
+  font-size: 1.5rem;
+}
+
+/* Operator profiles (data host): autocomplete, licence list, compliance indicators, feed URL panel */
+.autocomplete {
+  position: relative;
+}
+
+.autocomplete-items {
+  position: absolute;
+  border: 3px solid var(--govuk-colour-black);
+  z-index: 99;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background-color: #c5c7c8;
+  color: var(--govuk-colour-black);
+  font-family: "GDS Transport", arial, sans-serif;
+  font-size: 1.1875rem;
+}
+
+.autocomplete-items div {
+  padding: 10px;
+  cursor: pointer;
+  background-color: var(--govuk-colour-white);
+  border-bottom: 1px solid #b1b4b6;
+}
+
+.autocomplete-items div:hover,
+.autocomplete-active {
+  background-color: #003078 !important;
+  color: var(--govuk-colour-white);
+}
+
+ul.licence-list {
+  list-style: none;
+  padding-left: 0;
+}
+
+ul.licence-list .compliance-indicator {
+  position: absolute;
+  left: 0;
+  top: 5px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background-color: #b1b4b6;
+}
+
+ul.licence-list .compliance-indicator.compliant {
+  background-color: #00703c;
+}
+
+ul.licence-list .compliance-indicator.non-compliant {
+  background-color: #d4351c;
+}
+
+ul.licence-list a {
+  padding-left: 30px;
+}
+
+.compliance-indicator-help-icon {
+  position: relative;
+}
+
+.csp-total-inscope-inseason {
+  font-weight: 400;
+  font-size: 1.6875rem;
+  line-height: 1.1111111111;
+}
+
+.csp-inline {
+  display: inline !important;
+}
+
+.api-url-panel {
+  display: flex;
+  justify-content: space-between;
+  border: 0.15rem solid #f3f2f1;
+  padding: 25px;
+}
+
+.api-url-panel__url {
+  font-family: "GDS Transport", arial, sans-serif;
+  font-size: 1.1875rem;
+  line-height: 1.3157894737;
+  color: #505a5f;
+}
+
+.no-wrap {
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+/* Operator licence services table (common.scss in the Django frontend) */
+.js-hidden {
+  display: none;
+}
+
+.sra-dot {
+  height: 18px;
+  width: 18px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.sra-dot-red {
+  background-color: #d4351c;
+}
+
+.sra-dot-green {
+  background-color: #00703c;
+}
+
+.sort-column > .sort-icon {
+  margin-left: 5px;
+}
+
+.sort-column > .fa-sort-asc,
+.sort-column > .sort-icon.fa-sort-up {
+  position: relative;
+  top: 6px;
+}
+
+#licence-services-table th {
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  cursor: pointer;
+  color: #1d70b8;
+}
+/*
+ * Seasonal services journey.
+ * Ported from transit_odp/frontend/assets/sass/components/{table/_seasonal_service,
+ * table/_table,forms/_forms,widgets/_widgets}.scss and scoped to the pages that use them.
+ */
+.seasonal-services-page .hide-using-position {
+  position: absolute;
+  overflow: hidden;
+  height: 1px;
+  width: 1px;
+  padding: 0;
+  margin: 0;
+}
+
+.seasonal-services-page .custom_govuk_table_border {
+  border: solid 1px #979797;
+  padding: 20px;
+}
+
+/* Django's sass `@extend .govuk-table` gives the table the GOV.UK typography. */
+.seasonal-services-page .custom_govuk_table {
+  font-family: "GDS Transport", arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  font-weight: 400;
+  font-size: 1rem;
+  line-height: 1.25;
+  color: #0b0c0c;
+  margin-bottom: 20px;
+}
+
+.seasonal-services-page .custom_govuk_table .actions-column-table {
+  color: #1d70b8;
+  font-weight: normal;
+}
+
+.seasonal-services-page .custom_govuk_table .column-header-link {
+  color: #1d70b8;
+  font-size: 18px;
+  font-weight: normal;
+  text-decoration: none;
+}
+
+.seasonal-services-page .custom_govuk_table .column-header-link:focus {
+  color: #0b0c0c;
+  background-color: #ffdd00;
+  box-shadow: 0 -2px #ffdd00, 0 4px #0b0c0c;
+  text-decoration: none;
+  outline: 3px solid transparent;
+}
+
+.seasonal-services-page .custom_govuk_table .order-up,
+.seasonal-services-page .custom_govuk_table .order-down {
+  display: none;
+}
+
+.seasonal-services-page .custom_govuk_table .asc a,
+.seasonal-services-page .custom_govuk_table .desc a {
+  font-weight: bold;
+}
+
+.seasonal-services-page .custom_govuk_table .asc .order-up,
+.seasonal-services-page .custom_govuk_table .desc .order-down {
+  display: inline;
+}
+
+.seasonal-services-page .button-table-link {
+  color: #1d70b8;
+  background: none;
+  border: none;
+  padding: 0;
+  font-family: inherit;
+  font-size: inherit;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.seasonal-services-page .seasonal_service_empty_body_table {
+  width: 100%;
+}
+
+.seasonal-services-page .seasonal_service_empty_body_table p {
+  display: flex;
+  justify-content: center;
+  margin: 0;
+  font-size: 19px;
+  line-height: 1.3;
+  color: #505a5f;
+}
+
+.seasonal-services-page .heading-container,
+.seasonal-service .heading-container {
+  display: flex;
+  justify-content: space-between;
+  align-content: center;
+  flex-wrap: wrap;
+  align-items: baseline;
+}
+
+.seasonal-service .licence {
+  margin-bottom: 5rem;
+}
+
+.seasonal-service .buttons {
+  margin-top: 5rem;
+}
+
+.seasonal-service .buttons button {
+  margin-right: 0.2rem;
+}
+
+.seasonal-service .govuk-heading-s {
+  margin-top: 30px;
+  margin-bottom: 30px;
+}
+
+.seasonal-service .heading-container .govuk-heading-s {
+  margin-top: 30px;
+  margin-bottom: 10px;
+}
+
+.seasonal-service .date-container {
+  display: flex;
+  justify-content: space-between;
+  align-content: center;
+  margin-bottom: 5rem;
+}
+
+.seasonal-service .date-container .date {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  width: 47%;
+}
+
+.seasonal-service .service-code-widget {
+  display: flex;
+  align-items: center;
+  box-sizing: border-box;
+  width: 100%;
+  height: 40px;
+  margin-top: 0;
+  padding: 5px;
+  border: 2px solid #0b0c0c;
+  border-radius: 0;
+  font-size: 19px;
+  line-height: 1.25;
+  font-family: "GDS Transport", arial, sans-serif;
+}
+
+.seasonal-service .service-code-widget input {
+  font-family: inherit;
+  font-size: inherit;
+}
+
+.seasonal-service .service-code-widget p {
+  color: #505a5f;
+  margin: 0;
+  padding: 0;
+  background: none;
+}
+
+.seasonal-service .service-code-widget input {
+  border: none;
+  margin: 0;
+  padding: 0;
+  background: none;
+  height: auto;
+  width: auto;
+  flex: 1;
+}
+
+.seasonal-service .service-code-widget input:focus {
+  outline: unset;
+  outline-offset: unset;
+  box-shadow: unset;
+}
+
+.seasonal-service .service-code-widget:focus-within {
+  outline: 3px solid #ffdd00;
+  outline-offset: 0;
+  box-shadow: inset 0 0 0 2px;
+}
+
+.seasonal-service .service-code-widget.govuk-input--error {
+  border-color: #d4351c;
+}
+
+/* Session timeout warning.
+   Mirrors transit_odp/frontend/assets/sass/components/modal/_timeout-warning.scss
+   (govuk-responsive-padding(6) = 20px, 30px from tablet; govuk-spacing(2/3/0) = 10/15/0px).
+   Django's stylesheet does not apply border-box sizing to the dialog, so neither do we. */
+.govuk-timeout-warning {
+  display: none;
+  box-sizing: content-box;
+  padding: 20px;
+  /* Setting width allows IE to center dialog vertically */
+  width: 100%;
+  max-width: 500px;
+  z-index: 2;
+  background-color: var(--govuk-colour-light-grey);
+  position: absolute;
+  right: 0;
+  left: 0;
+  margin: auto;
+  border-style: solid;
+  border-width: initial;
+  border-color: initial;
+}
+
+@media (min-width: 40.0625em) {
+  .govuk-timeout-warning {
+    padding: 30px;
+  }
+}
+
+.govuk-timeout-warning .govuk-button {
+  margin: 0 10px 15px 0;
+}
+
+@media (min-width: 40.0625em) {
+  .govuk-timeout-warning .govuk-button {
+    margin-bottom: 0;
+  }
+}
+
+/* The dialog takes focus when it opens (tabindex="-1"); it is not interactive itself. */
+.govuk-timeout-warning:focus {
+  outline: none;
+}
+
+.disable-scroll {
+  margin: 0;
+  height: 100vh;
+  overflow-y: hidden;
+}
+
+#dialog-overlay {
+  display: none;
+  position: fixed;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  background: rgba(0, 0, 0, 0.7);
+  z-index: 1;
+}
+
+.manage-users-table {
+  font-size: 19px;
+  margin-bottom: 60px;
+}
+
+.manage-users-table .manage-users-table__key {
+  font-weight: 700;
+}
+
+.manage-users-table .manage-users-table__value.left {
+  text-align: start;
+}
+
+.manage-users-table .manage-users-table__value.right {
+  text-align: end;
+}
+
+.manage-users-table .manage-users-table__change {
+  text-decoration-line: none;
+}

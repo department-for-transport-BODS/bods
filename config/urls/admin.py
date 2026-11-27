@@ -23,6 +23,7 @@ handler500 = "transit_odp.common.utils.custom_error_handlers.server_error"
 
 urlpatterns = [
     path("", AdminHomeView.as_view(), name="home"),
+    path("api/auth/", include("config.urls.session_auth_api")),
     path(
         "metrics/",
         include(metrics_paths),

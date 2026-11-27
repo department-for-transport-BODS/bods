@@ -1,0 +1,381 @@
+/** @jest-environment node */
+
+import { NextRequest } from 'next/server';
+import { proxy } from './proxy';
+
+function request(url: string, host: string, extraHeaders?: Record<string, string>): NextRequest {
+  return new NextRequest(url, { headers: { host, ...extraHeaders } });
+}
+
+describe('subdomain routing proxy', () => {
+  const originalBaseDomain = process.env.NEXT_PUBLIC_BODS_BASE_DOMAIN;
+
+  afterEach(() => {
+    process.env.NEXT_PUBLIC_BODS_BASE_DOMAIN = originalBaseDomain;
+  });
+
+  describe('deployed hosts', () => {
+    beforeEach(() => {
+      process.env.NEXT_PUBLIC_BODS_BASE_DOMAIN = 'xyz.com';
+    });
+
+    it.each([
+      ['www.xyz.com', '/healthcheck'],
+      ['admin.xyz.com', '/admin/healthcheck'],
+      ['10.0.0.1:3000', '/healthcheck'],
+      ['10.0.0.1:3000', '/admin/healthcheck'],
+    ])('returns an empty 200 for %s%s without forwarding the request', async (host, path) => {
+      const response = proxy(request(`http://${host}${path}?probe=1`, host, {
+        cookie: 'sessionid=existing-session',
+      }));
+
+      expect(response.status).toBe(200);
+      expect(await response.text()).toBe('');
+      expect(response.headers.get('location')).toBeNull();
+      expect(response.headers.get('x-middleware-rewrite')).toBeNull();
+      expect(response.headers.get('x-middleware-next')).toBeNull();
+    });
+
+    it('rewrites clean publish URLs to the internal publish route', () => {
+      const url = 'https://publish.xyz.com/org/42';
+      const response = proxy(request(url, 'publish.xyz.com'));
+
+      expect(new URL(response.headers.get('x-middleware-rewrite')!, url).pathname).toBe('/publish/org/42');
+    });
+
+    it.each(['/gatekeeper', '/abods-gatekeeper'])('rewrites the publish gatekeeper page %s to the internal publish route', (path) => {
+      const url = `https://publish.xyz.com${path}`;
+      const response = proxy(request(url, 'publish.xyz.com'));
+
+      expect(new URL(response.headers.get('x-middleware-rewrite')!, url).pathname).toBe(`/publish${path}`);
+    });
+
+    it('rewrites the PPC download paths to the publish route handlers', () => {
+      const paths = [
+        '/org/42/dataset/ppc-archive/',
+        '/org/42/dataset/avl/7/download-matching-report/',
+        '/org/42/dataset/avl/7/validation-report/',
+      ];
+
+      paths.forEach((path) => {
+        const url = `https://publish.xyz.com${path}`;
+        const response = proxy(request(url, 'publish.xyz.com'));
+
+        expect(new URL(response.headers.get('x-middleware-rewrite')!, url).pathname).toBe(
+          `/publish${path}`,
+        );
+      });
+    });
+
+    it('rewrites operator requirements on the publish host without losing the section query', () => {
+      const url = 'https://publish.xyz.com/guidance/operator-requirements?section=dataquality';
+      const response = proxy(request(url, 'publish.xyz.com'));
+      const rewriteUrl = new URL(response.headers.get('x-middleware-rewrite')!, url);
+
+      expect(rewriteUrl.pathname).toBe('/publish/guidance/operator-requirements');
+      expect(rewriteUrl.search).toBe('?section=dataquality');
+    });
+
+    it('rewrites local authority requirements on the publish host without losing the section query', () => {
+      const url = 'https://publish.xyz.com/guidance/local-authority-requirements?section=support';
+      const response = proxy(request(url, 'publish.xyz.com'));
+      const rewriteUrl = new URL(response.headers.get('x-middleware-rewrite')!, url);
+
+      expect(rewriteUrl.pathname).toBe('/publish/guidance/local-authority-requirements');
+      expect(rewriteUrl.search).toBe('?section=support');
+    });
+
+    it('rewrites developer requirements on the data host without losing the section query', () => {
+      const url = 'https://data.xyz.com/guidance/requirements?section=api';
+      const response = proxy(request(url, 'data.xyz.com'));
+      const rewriteUrl = new URL(response.headers.get('x-middleware-rewrite')!, url);
+
+      expect(rewriteUrl.pathname).toBe('/data/guidance/requirements');
+      expect(rewriteUrl.search).toBe('?section=api');
+    });
+
+    it('redirects a legacy publish path to the clean publish URL', () => {
+      const response = proxy(request('https://publish.xyz.com/publish/org/42?tab=draft', 'publish.xyz.com'));
+
+      expect(response.status).toBe(307);
+      expect(response.headers.get('location')).toBe('https://publish.xyz.com/org/42?tab=draft');
+    });
+
+    it('rewrites clean data URLs to the internal data route', () => {
+      const url = 'https://data.xyz.com/dataset';
+      const response = proxy(request(url, 'data.xyz.com'));
+
+      expect(new URL(response.headers.get('x-middleware-rewrite')!, url).pathname).toBe('/data/dataset');
+    });
+
+    it('serves the API services index at its legacy URL', () => {
+      const url = 'https://data.xyz.com/api/';
+      const response = proxy(request(url, 'data.xyz.com'));
+
+      expect(new URL(response.headers.get('x-middleware-rewrite')!, url).pathname).toBe(
+        '/data/api/',
+      );
+      expect(response.headers.get('location')).toBeNull();
+    });
+
+    it.each([
+      ['/api/timetable-openapi/', '/data/timetable-openapi/'],
+      ['/api/buslocation-api/', '/data/buslocation-api/'],
+      ['/api/buslocation-api/openapi/', '/data/buslocation-api/openapi/'],
+      ['/api/fares-openapi/', '/data/fares-openapi/'],
+      ['/api/disruptions-api-overview/', '/data/disruptions-api-overview/'],
+      ['/api/disruptions-openapi/', '/data/disruptions-openapi/'],
+      ['/api/cancellations-api-overview/', '/data/cancellations-api-overview/'],
+      ['/api/cancellations-openapi/', '/data/cancellations-openapi/'],
+    ])('serves the legacy API page URL %s from %s', (publicPath, internalPath) => {
+      const url = `https://data.xyz.com${publicPath}`;
+      const response = proxy(request(url, 'data.xyz.com'));
+
+      expect(new URL(response.headers.get('x-middleware-rewrite')!, url).pathname).toBe(
+        internalPath,
+      );
+      expect(response.headers.get('location')).toBeNull();
+    });
+
+    it('leaves versioned public APIs with the Django gateway', () => {
+      const response = proxy(
+        request('https://data.xyz.com/api/v1/dataset/', 'data.xyz.com'),
+      );
+
+      expect(response.headers.get('x-middleware-rewrite')).toBeNull();
+      expect(response.headers.get('location')).toBeNull();
+    });
+
+    it.each([
+      [
+        '/api/buslocation-api/subscribe/',
+        '/api/data/buslocation-api/subscribe/',
+      ],
+      [
+        '/api/buslocation-api/subscribe/success/',
+        '/api/data/buslocation-api/subscribe/success/',
+      ],
+      [
+        '/api/buslocation-api/manage-subscriptions/',
+        '/api/data/buslocation-api/manage-subscriptions/',
+      ],
+      [
+        '/api/buslocation-api/manage-subscriptions/subscription-id/',
+        '/api/data/buslocation-api/manage-subscriptions/subscription-id/',
+      ],
+    ])('forwards the legacy subscription URL %s to Django', (publicPath, internalPath) => {
+      const url = `https://data.xyz.com${publicPath}`;
+      const response = proxy(request(url, 'data.xyz.com'));
+
+      expect(new URL(response.headers.get('x-middleware-rewrite')!, url).pathname).toBe(
+        internalPath,
+      );
+      expect(response.headers.get('location')).toBeNull();
+    });
+
+    it('redirects a legacy publish path from the data host to publish', () => {
+      const response = proxy(request('https://data.xyz.com/publish/org/42', 'data.xyz.com'));
+
+      expect(response.headers.get('location')).toBe('https://publish.xyz.com/org/42');
+    });
+
+    it('redirects shared routes from the publish host to WWW', () => {
+      const response = proxy(request('https://publish.xyz.com/contact', 'publish.xyz.com'));
+
+      expect(response.headers.get('location')).toBe('https://www.xyz.com/contact');
+    });
+
+    it('leaves www pages on their existing route', () => {
+      const response = proxy(request('https://www.xyz.com/contact', 'www.xyz.com'));
+
+      expect(response.headers.get('x-middleware-rewrite')).toBeNull();
+      expect(response.headers.get('location')).toBeNull();
+    });
+
+    it('serves OpenAPI specifications without a data route rewrite', () => {
+      const response = proxy(
+        request('https://data.xyz.com/openapi/timetables.yml', 'data.xyz.com'),
+      );
+
+      expect(response.headers.get('x-middleware-rewrite')).toBeNull();
+      expect(response.headers.get('location')).toBeNull();
+    });
+
+    it('leaves the apex domain on its existing route', () => {
+      const response = proxy(request('https://xyz.com/', 'xyz.com'));
+
+      expect(response.headers.get('x-middleware-rewrite')).toBeNull();
+      expect(response.headers.get('location')).toBeNull();
+    });
+
+    it('keeps my account on the publish host', () => {
+      const response = proxy(request('https://publish.xyz.com/account', 'publish.xyz.com'));
+
+      expect(response.headers.get('location')).toBeNull();
+      expect(response.headers.get('x-middleware-rewrite')).toBeNull();
+    });
+
+    it('keeps my account on the data host', () => {
+      const response = proxy(request('https://data.xyz.com/account', 'data.xyz.com'));
+
+      expect(response.headers.get('location')).toBeNull();
+      expect(response.headers.get('x-middleware-rewrite')).toBeNull();
+    });
+
+    it('rewrites Django user-management URLs onto the publish account page', () => {
+      const url = 'https://publish.xyz.com/account/manage/12';
+      const response = proxy(request(url, 'publish.xyz.com'));
+
+      expect(new URL(response.headers.get('x-middleware-rewrite')!, url).pathname).toBe('/publish/account/manage/12');
+    });
+
+    it('rewrites manage subscriptions on the data host', () => {
+      const url = 'https://data.xyz.com/account/manage';
+      const response = proxy(request(url, 'data.xyz.com'));
+
+      expect(new URL(response.headers.get('x-middleware-rewrite')!, url).pathname).toBe(
+        '/data/account/manage',
+      );
+    });
+
+    it('keeps account login on the publish host', () => {
+      const response = proxy(request('https://publish.xyz.com/account/login', 'publish.xyz.com'));
+
+      expect(response.headers.get('location')).toBeNull();
+      expect(response.headers.get('x-middleware-rewrite')).toBeNull();
+    });
+
+    it('keeps account inactive on the publish host', () => {
+      const response = proxy(
+        request('https://publish.xyz.com/account/inactive', 'publish.xyz.com'),
+      );
+
+      expect(response.headers.get('location')).toBeNull();
+      expect(response.headers.get('x-middleware-rewrite')).toBeNull();
+    });
+
+    it('keeps account logout on the data host', () => {
+      const response = proxy(request('https://data.xyz.com/account/logout', 'data.xyz.com'));
+
+      expect(response.headers.get('location')).toBeNull();
+      expect(response.headers.get('x-middleware-rewrite')).toBeNull();
+    });
+
+    it('keeps nested account pages such as password reset on the publish host', () => {
+      const response = proxy(request('https://publish.xyz.com/account/password/reset', 'publish.xyz.com'));
+
+      expect(response.headers.get('location')).toBeNull();
+      expect(response.headers.get('x-middleware-rewrite')).toBeNull();
+    });
+
+    it('keeps account-exists on the publish host', () => {
+      const response = proxy(
+        request('https://publish.xyz.com/account/account-exists', 'publish.xyz.com'),
+      );
+
+      expect(response.headers.get('location')).toBeNull();
+      expect(response.headers.get('x-middleware-rewrite')).toBeNull();
+    });
+
+    it('keeps logout-success on the data host', () => {
+      const response = proxy(
+        request('https://data.xyz.com/account/logout-success', 'data.xyz.com'),
+      );
+
+      expect(response.headers.get('location')).toBeNull();
+      expect(response.headers.get('x-middleware-rewrite')).toBeNull();
+    });
+
+    it('keeps invitation accept links on the publish host', () => {
+      const response = proxy(
+        request('https://publish.xyz.com/invitations/accept-invite/abc123', 'publish.xyz.com'),
+      );
+
+      expect(response.headers.get('location')).toBeNull();
+      expect(response.headers.get('x-middleware-rewrite')).toBeNull();
+    });
+
+    it('keeps invitation accept links on the data host', () => {
+      const response = proxy(
+        request('https://data.xyz.com/invitations/accept-invite/abc123', 'data.xyz.com'),
+      );
+
+      expect(response.headers.get('location')).toBeNull();
+      expect(response.headers.get('x-middleware-rewrite')).toBeNull();
+    });
+
+    it('keeps account settings on the data host', () => {
+      const response = proxy(request('https://data.xyz.com/account/settings', 'data.xyz.com'));
+
+      expect(response.headers.get('location')).toBeNull();
+      expect(response.headers.get('x-middleware-rewrite')).toBeNull();
+    });
+
+    it('keeps account settings on the publish host', () => {
+      const url = 'https://publish.xyz.com/account/settings';
+      const response = proxy(request(url, 'publish.xyz.com'));
+
+      expect(response.headers.get('location')).toBeNull();
+      expect(response.headers.get('x-middleware-rewrite')).toBeNull();
+    });
+
+    it('keeps agent invite pages on the data host', () => {
+      const response = proxy(request('https://data.xyz.com/account/agent/invite/4', 'data.xyz.com'));
+
+      expect(response.headers.get('location')).toBeNull();
+      expect(response.headers.get('x-middleware-rewrite')).toBeNull();
+    });
+
+    it.each(['data', 'publish', 'admin', 'www'])('serves account/~redirect on the %s host without rewriting', (subdomain) => {
+      for (const path of ['/account/~redirect', '/account/~redirect/']) {
+        const host = `${subdomain}.xyz.com`;
+        const response = proxy(request(`https://${host}${path}`, host));
+
+        expect(response.headers.get('location')).toBeNull();
+        expect(response.headers.get('x-middleware-rewrite')).toBeNull();
+      }
+    });
+
+    it('still redirects genuinely www-only routes from the publish host to WWW', () => {
+      const response = proxy(request('https://publish.xyz.com/cookie', 'publish.xyz.com'));
+
+      expect(response.headers.get('location')).toBe('https://www.xyz.com/cookie');
+    });
+
+    it('does not redirect using an untrusted host', () => {
+      const response = proxy(request('https://publish.evil.com/contact', 'publish.evil.com'));
+
+      expect(response.headers.get('location')).toBeNull();
+      expect(response.headers.get('x-middleware-rewrite')).toBeNull();
+    });
+
+    it('prefers the Host header over a spoofed forwarded host', () => {
+      const response = proxy(
+        request('https://publish.xyz.com/contact', 'publish.xyz.com', {
+          'x-forwarded-host': 'publish.evil.com',
+        }),
+      );
+
+      expect(response.headers.get('location')).toBe('https://www.xyz.com/contact');
+    });
+  });
+
+  describe('local hosts', () => {
+    beforeEach(() => {
+      process.env.NEXT_PUBLIC_BODS_BASE_DOMAIN = 'localhost';
+    });
+
+    it('routes legacy local data paths to the local data hostname', () => {
+      const response = proxy(request('http://localhost:3000/data/timetable', 'localhost:3000'));
+
+      expect(response.headers.get('location')).toBe('http://data.localhost:3000/timetable');
+    });
+
+    it('keeps login on the local publish hostname', () => {
+      const response = proxy(request('http://publish.localhost:3000/account/login', 'publish.localhost:3000'));
+
+      expect(response.headers.get('location')).toBeNull();
+      expect(response.headers.get('x-middleware-rewrite')).toBeNull();
+    });
+  });
+});

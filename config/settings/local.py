@@ -15,17 +15,14 @@ os.environ["DJANGO_READ_DOT_ENV_FILE"] = os.environ.get(
 # ------------------------------------------------------------------------------
 # https://docs.djangoproject.com/en/dev/ref/settings/#debug
 DEBUG = True
-# https://docs.djangoproject.com/en/dev/ref/settings/#secret-key
-SECRET_KEY = env(
-    "DJANGO_SECRET_KEY",
-    default="X61BMLHfhL8X8lPce9YuOVZ5N0YPfLqwFGcKJQPdZaOmBQ3MOvQQ6T3yLNvR0vCC",
-)
 # Set DD_TRACE_ENABLED to False for local environment
 DD_TRACE_ENABLED = env.bool("DD_TRACE_ENABLED", default=False)
 
 # URLS
 # ------------------------------------------------------------------------------
 # https://django-hosts.readthedocs.io/en/latest/index.html#
+
+USE_X_FORWARDED_HOST = True
 
 # https://docs.djangoproject.com/en/dev/ref/settings/#allowed-hosts
 ALLOWED_HOSTS = [
@@ -68,6 +65,23 @@ EMAIL_PORT = 1025
 # Set the CORS 'Access-Control-Allow-Origin' header to allow django-debug-toolbar
 # to work on subdomains.
 CORS_ORIGIN_ALLOW_ALL = True
+CORS_ALLOW_CREDENTIALS = True
+
+# Allow the Next.js dev server as a trusted CSRF origin / Trust local frontend dev servers that post forms to Django publish endpoints.
+# Account routes (login/logout) are served from every subdomain, so each Next.js
+# service host needs to be trusted here too.
+CSRF_TRUSTED_ORIGINS = [
+    "http://localhost:3000",
+    "http://localhost:3001",
+    "http://127.0.0.1:3000",
+    "http://www.localhost:3001",
+    "http://data.localhost:3000",
+    "http://data.localhost:3001",
+    "http://data.localhost:3002",
+    "http://publish.localhost:3000",
+    "http://publish.localhost:3001",
+    "http://publish.localhost:3002",
+]
 
 # django-debug-toolbar
 # ------------------------------------------------------------------------------
@@ -83,6 +97,11 @@ DEBUG_TOOLBAR_PATCH_SETTINGS = False
 MIDDLEWARE.insert(
     MIDDLEWARE.index("django.middleware.common.CommonMiddleware") + 1,
     "debug_toolbar.middleware.DebugToolbarMiddleware",
+)
+
+MIDDLEWARE.insert(
+    MIDDLEWARE.index("django.middleware.csrf.CsrfViewMiddleware") + 1,
+    "transit_odp.common.middleware.EnsureCSRF",
 )
 #
 # MIDDLEWARE.insert(
@@ -126,8 +145,9 @@ CELERY_TASK_EAGER_PROPAGATES = False
 # Increase age of session cookies to prevent been signed out quickly in development
 SESSION_COOKIE_AGE = 1314000  # set to 1 year
 SESSION_COOKIE_DOMAIN = ""
+CSRF_COOKIE_DOMAIN = ""
+CLAMAV_SKIP_SCAN = True
 
-# Your stuff...
 # ------------------------------------------------------------------------------
 DISABLE_NAPTAN_SCHEMA_VALIDATION = True
 

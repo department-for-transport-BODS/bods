@@ -2,12 +2,9 @@ from typing import Final
 
 from django.conf import settings
 from django.utils.translation import gettext as _
-from django_hosts import reverse
 
-from config.hosts import ROOT_HOST
 from transit_odp.pipelines.models import DatasetETLTaskResult
 
-support_url = reverse("contact", host=ROOT_HOST)
 DATA_QUALITY_LABEL: Final = _(
     "I have reviewed the data quality report and wish to publish my data"
 )
