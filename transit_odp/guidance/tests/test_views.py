@@ -60,6 +60,17 @@ class TestLocalAuthorityReqView:
 class TestBusOperatorReqView:
     host = config.hosts.PUBLISH_HOST
 
+    def test_data_quality_displays_schema_and_profile_versions(self, client_factory):
+        client = client_factory(host=self.host)
+        url = reverse("guidance:support-bus_operators", host=self.host)
+
+        response = client.get(url, data={"section": "dataquality"})
+
+        assert response.status_code == 200
+        assert b"TransXChange Version 2.4 profile v1.1a" in response.content
+        assert b"TxC 2.4 or 2.4.1 schema" in response.content
+        assert b"TxC 2.4 PTI profile v1.1" in response.content
+
     def test_overview_section(self, client_factory):
         client = client_factory(host=self.host)
         url = reverse("guidance:support-bus_operators", host=self.host)
