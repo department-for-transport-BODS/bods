@@ -113,6 +113,15 @@ AVL_LINE_LEVEL_REQUIRE_ATTENTION = (
 )
 
 
+def test_downloads_displays_txc_profile_version(client_factory):
+    client = client_factory(host=DATA_HOST)
+    response = client.get(reverse("downloads", host=DATA_HOST))
+
+    assert response.status_code == 200
+    assert b"TXC 2.4 PTI v1.1" in response.content
+    assert b"TXC 2.4.1 PTI" not in response.content
+
+
 def get_lta_complaint_data_queryset():
     org = OrganisationFactory()
     total_services = 9
