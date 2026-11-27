@@ -60,7 +60,7 @@ function TimetableDeleteContent() {
   const heading = isCancellingUpdate
     ? 'Would you like to cancel updating this data set'
     : 'Would you like to delete this data set?';
-  const bodyText = `Please confirm that you would like to ${isCancellingUpdate ? 'cancel updating' : 'delete'} data set "${datasetName}" .`;
+  const bodyText = `Please confirm that you would like to ${isCancellingUpdate ? 'cancel updating' : 'delete'} data set "${datasetName}" . Any changes you have made so far will not be saved.`;
 
   const handleDelete = async () => {
     setIsDeleting(true);
@@ -88,8 +88,6 @@ function TimetableDeleteContent() {
             <h1 className="govuk-heading-xl">{heading}</h1>
             <p className="govuk-body-l">
               {bodyText}
-              <br />
-              Any changes you have made so far will not be saved.
             </p>
             <ErrorSummary errors={errorMessage ? [errorMessage] : []} summaryId="delete-error-title" />
             <div className="govuk-button-group">
