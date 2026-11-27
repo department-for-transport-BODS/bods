@@ -71,7 +71,7 @@ django-csp = "^3.8"
 
 
 [tool.poetry.group.dev.dependencies]
-black = { version = "22.3.0", extras = ["colorama"] }
+black = { version = "26.10.1", extras = ["colorama"] }
 coverage = "~=7.4.0"
 ddt = "~=1.7.1"
 django-debug-toolbar = "~=4.2.0"
